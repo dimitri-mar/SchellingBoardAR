@@ -78,7 +78,7 @@ def parse_grid_string(grid_string):
 
     return  grid
 
-def correct_perspective(img, box, grid_size):
+def correct_perspective(img, box, grid_size, grid_size=None):
     """Correct perspective of image
 
     Args:
@@ -100,12 +100,15 @@ def correct_perspective(img, box, grid_size):
 
     # to find the min conveninet dimension to avoid deformation, I look for the minimum
     # difference between axies
-    min_y = np.min([np.abs(np.diff(sx_points[:, 0, 1])),
-                    np.abs(np.diff(dx_points[:, 0, 1]))])
+    if grid_size is None:
+        min_y = np.min([np.abs(np.diff(sx_points[:, 0, 1])),
+                        np.abs(np.diff(dx_points[:, 0, 1]))])
 
-    dy = min_y - (min_y % grid_y)
-
-    dx = dy / grid_y * grid_x
+        dy = min_y - (min_y % grid_y)
+        dx = dy / grid_y * grid_x
+    else:
+        dy = grid_size * grid_y
+        dx = grid_size * grid_x
 
     start_poly = np.array(
         [sx_top_point[0], dx_top_point[0], dx_bottom_point[0],
