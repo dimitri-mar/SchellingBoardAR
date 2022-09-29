@@ -4,6 +4,9 @@ import os
 import click
 
 from datetime import datetime
+from loguru import logger
+
+
 
 
 def prepare_img_for_boundary(img, show=False):
@@ -111,7 +114,9 @@ def correct_perspective(img, box, grid_size):
                                   np.float32)
 
     M = cv2.getPerspectiveTransform(start_poly, target_rectangular)
-    dst = cv2.warpPerspective(img, M, (int(dx), int(dy)))
+    destination_size = (int(dx), int(dy))
+    dst = cv2.warpPerspective(img, M, destination_size)
+    logger.info(f"Corrected perspective of image to size {destination_size}")
 
     return dst
 
@@ -121,58 +126,78 @@ def process_name_id():
 
 
 @click.command()
-@click.option('--img', '-i', type=click.Path(exists=True), required=True)
+@click.option('--img-path', '-i', type=click.Path(exists=True), required=True)
 @click.option("--data-preparation", "-t", type=bool, default=False,  is_flag=True)
 @click.option("--show", "-s", type=bool,  is_flag=True)
 @click.option("--grid", "-g", type=str, default="26x18")
 @click.option('--output-dir', '-o', type=click.Path(exists=False), required=True)
 @click.option('--process-name', '-n', type=str, default=process_name_id())
-def control(img, data_preparation, show, grid, output_dir, process_name):
+def control(img_path, data_preparation, show, grid, output_dir, process_name):
     """ manage the image processing pipeline """
 
     grid_x, grid_y = parse_grid_string(grid)
 
     # load image
-    img = cv2.imread(img)
+    img = cv2.imread(img_path)
 
     if data_preparation:
         # create a directory in output_dir if it does not exist
         if not os.path.exists(output_dir):
             os.makedirs(output_dir) # create directory
+
+        # setup the logger
+        logger.add(f"{output_dir}/{process_name}.log", rotation="10 MB")
+        logger.info(f"Process name: {process_name}")
+        logger.info(f"Grid size: {grid_x}x{grid_y}")
+        logger.info(f"Image size: {img.shape[1]}x{img.shape[0]}")
+        logger.info(f"Image path: {img_path}")
+
         # create a directory for the current process
         process_dir = os.path.join(output_dir, process_name)
         if not os.path.exists(process_dir):
             os.makedirs(process_dir)
+            logger.info(f"Created directory {process_dir}")
+
+
 
         #save original image
         cv2.imwrite(os.path.join(process_dir, "original.png"), img)
 
         threshold_img  = prepare_img_for_boundary(img, show)
-        cv2.imwrite(os.path.join(process_dir, "threshold.png"), threshold_img)
+
+        threshold_img_file_name = os.path.join(process_dir, "threshold.png")
+        cv2.imwrite(threshold_img_file_name, threshold_img)
+        logger.info(f"computed threshold image and saved to {threshold_img_file_name}")
+
 
         largest_box = find_largest_box(threshold_img)
-
+        logger.info(f"Found largest box")
 
         # save the mask of the largest_box
         mask = np.zeros((img.shape), np.uint8)
-        cv2.drawContours(mask, [largest_box],0, 255, -1)
-        cv2.drawContours(mask,  [largest_box],0, 0, 2)
+        cv2.drawContours(mask, [largest_box], 0, 255, -1)
+        cv2.drawContours(mask, [largest_box], 0, 0, 2)
         if show:
             cv2.imshow("mask", mask)
         cv2.imwrite(os.path.join(process_dir, "mask.png"), mask)
 
         img2 = img.copy()
-        cv2.drawContours(img2, [largest_box],0, (0, 255, 0), 3)
+        cv2.drawContours(img2, [largest_box], 0, (0, 255, 0), 3)
         if show:
             cv2.imshow("boundary", img2)
         cv2.imwrite(os.path.join(process_dir, "contour.png"), img2)
 
-        # lets correct the perspective
+        # let's correct the perspective
         img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
         if show:
             cv2.imshow("corrected", img_corrected)
-        cv2.imwrite(os.path.join(process_dir, "corrected.png"), img_corrected)
 
+
+        cv2.imwrite(os.path.join(process_dir, "corrected.png"), img_corrected)
+        logger.info(
+            f"Corrected perspective and saved to {os.path.join(process_dir, 'corrected.png')}")
+
+        # divede the image along the grid and save the different images
 
 
 
