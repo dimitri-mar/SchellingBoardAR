@@ -132,7 +132,11 @@ def process_name_id():
 @click.option("--grid", "-g", type=str, default="26x18")
 @click.option('--output-dir', '-o', type=click.Path(exists=False), required=True)
 @click.option('--process-name', '-n', type=str, default=process_name_id())
-def control(img_path, data_preparation, show, grid, output_dir, process_name):
+@click.option("--cell-size", "-c", type=int, default=None)
+def control(img_path, data_preparation, show,
+            grid,
+            output_dir, process_name,
+            cell_size):
     """ manage the image processing pipeline """
 
     grid_x, grid_y = parse_grid_string(grid)
@@ -195,10 +199,28 @@ def control(img_path, data_preparation, show, grid, output_dir, process_name):
 
         cv2.imwrite(os.path.join(process_dir, "corrected.png"), img_corrected)
         logger.info(
-            f"Corrected perspective and saved to {os.path.join(process_dir, 'corrected.png')}")
+            f"Corrected perspective "
+            f"and saved to {os.path.join(process_dir, 'corrected.png')}  \n"
+            f"Image size: {img_corrected.shape}")
 
         # divede the image along the grid and save the different images
+        if cell_size is None:
+            cell_size = int(img_corrected.shape[1] / grid_x)
+            assert cell_size == int(img_corrected.shape[0] / grid_y), \
+                                "cell size is not the same for x and y"
+        logger.info(f"Cell size: {cell_size}")
 
+        # save the cells in a subdirectory
+        cells_dir = os.path.join(process_dir, "cell_imgs")
+        if not os.path.exists(cells_dir):
+            os.makedirs(cells_dir)
+            logger.info(f"Created directory {cells_dir}")
+        for i in range(grid_x):
+            for j in range(grid_y):
+                cell = img_corrected[j * cell_size:(j + 1) * cell_size,
+                                     i * cell_size:(i + 1) * cell_size]
+                cv2.imwrite(
+                    os.path.join(cells_dir, f"cell_{i}_{j}.png"), cell)
 
 
     if show:
