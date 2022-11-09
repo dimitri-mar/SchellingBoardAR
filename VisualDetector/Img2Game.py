@@ -39,7 +39,7 @@ def find_largest_box(img ):
               countour of largest box
 
         """
-
+    logger.info("Finding largest box in image")
     contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE,
                                            cv2.CHAIN_APPROX_SIMPLE)
     areas = [cv2.contourArea(i) for i in contours]
@@ -47,14 +47,14 @@ def find_largest_box(img ):
     # find the countour with the largest area
     max_ctr = np.argmax(areas)
 
-
     # approximate the contour with a polygon
     c = contours[max_ctr]
     peri = cv2.arcLength(c, True)
     approx = cv2.approxPolyDP(c, 0.01 * peri, True)  # 0.02
 
+
     # the polygon must have 4 vertices
-    assert len(approx) == 4, "The largest box must have 4 vertices"
+    #assert len(approx) == 4, "The largest box must have 4 vertices"
 
     return approx
 
@@ -78,7 +78,7 @@ def parse_grid_string(grid_string):
 
     return  grid
 
-def correct_perspective(img, box, grid_size, grid_size=None):
+def correct_perspective(img, box, grid_size):
     """Correct perspective of image
 
     Args:
@@ -100,19 +100,20 @@ def correct_perspective(img, box, grid_size, grid_size=None):
 
     # to find the min conveninet dimension to avoid deformation, I look for the minimum
     # difference between axies
-    if grid_size is None:
-        min_y = np.min([np.abs(np.diff(sx_points[:, 0, 1])),
-                        np.abs(np.diff(dx_points[:, 0, 1]))])
+    #if grid_size is None:
+    min_y = np.min([np.abs(np.diff(sx_points[:, 0, 1])),
+                    np.abs(np.diff(dx_points[:, 0, 1]))])
 
-        dy = min_y - (min_y % grid_y)
-        dx = dy / grid_y * grid_x
-    else:
-        dy = grid_size * grid_y
-        dx = grid_size * grid_x
+    dy = min_y - (min_y % grid_y)
+    dx = dy / grid_y * grid_x
+    #else:
+    #    dy = grid_size * grid_y
+    #    dx = grid_size * grid_x
 
     start_poly = np.array(
         [sx_top_point[0], dx_top_point[0], dx_bottom_point[0],
          sx_bottom_point[0]], np.float32)
+
     target_rectangular = np.array([[0, 0], [dx, 0], [dx, dy], [0, dy]],
                                   np.float32)
 
@@ -132,7 +133,9 @@ def process_name_id():
 @click.option('--img-path', '-i', type=click.Path(exists=True), required=True)
 @click.option("--data-preparation", "-t", type=bool, default=False,  is_flag=True)
 @click.option("--show", "-s", type=bool,  is_flag=True)
-@click.option("--grid", "-g", type=str, default="26x18")
+@click.option("--grid", "-g", type=str, default="26x18", help=
+             "Grid size in format \n n_cell_horizontally x n_cell_vertically"
+             "default is 26x18")
 @click.option('--output-dir', '-o', type=click.Path(exists=False), required=True)
 @click.option('--process-name', '-n', type=str, default=process_name_id())
 @click.option("--cell-size", "-c", type=int, default=None)
