@@ -3,21 +3,32 @@ import numpy as np
 from loguru import logger
 
 
-def prepare_img_for_boundary(img, show=False):
+def prepare_img_for_boundary(img, show=False,
+                             blurry_kernel_size=5,
+                             adaptive_threshold_mode = "adaptive_gaussian",
+                             dilate_kernel_size=3,
+                             dilate_iterations=1,
+                             ):
     """Prepare image for boundary detection"""
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # plt.imshow(gray, cmap='gray')
-    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    blur = cv2.GaussianBlur(gray, (blurry_kernel_size, blurry_kernel_size), 0)
     # plt.imshow(blur, cmap='gray')
-    thresh = cv2.adaptiveThreshold(blur, 255, 1, 1, 11, 2)
-    thresh = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, \
-                                   cv2.THRESH_BINARY, 11, 2)
+    if adaptive_threshold_mode == "adaptive_gaussian":
+        thresh = cv2.adaptiveThreshold(blur, 255,
+                                       cv2.ADAPTIVE_THRESH_GAUSSIAN_C, \
+                                       cv2.THRESH_BINARY, 11, 2)
+    elif adaptive_threshold_mode == "adaptive_mean":
+        thresh = cv2.adaptiveThreshold(blur, 255, 1, 1, 11, 2)
+    else:
+        raise ValueError("adaptive_threshold_mode not recognized")
 
     # remove small boundary discontinuities
-    kernel = np.ones((3, 3), np.uint8)
-    kernel = np.ones((4, 4), np.uint8)
-    thresh2 = cv2.dilate(thresh, kernel, iterations=2)
+    # kernel = np.ones((3, 3), np.uint8)
+    kernel = np.ones((dilate_kernel_size, dilate_kernel_size), np.uint8)
+
+    thresh2 = cv2.dilate(thresh, kernel, iterations=dilate_iterations)
     thresh2 = thresh
 
     if show:
@@ -26,7 +37,7 @@ def prepare_img_for_boundary(img, show=False):
     return thresh2
 
 
-def find_largest_box(img):
+def find_largest_box(img, return_first_n_boxes = 1):
     """Find largest box in image
 
         Args:
@@ -36,17 +47,21 @@ def find_largest_box(img):
 
         Returns:
               countour of largest box
+              :param return_first_n_boxes:
 
         """
     logger.info("Finding largest box in image")
     contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE,
                                            cv2.CHAIN_APPROX_SIMPLE)
     areas = [cv2.contourArea(i) for i in contours]
-
+    img_max_area = img.shape[0] * img.shape[1]
     # find the countour with the largest area
     # max_ctr = np.argmax(areas)
 
     sorted_ix = np.flip(np.argsort(areas))
+
+
+    boxes = []
 
     # find the rectangle with largest area (namely it has to have 4 edges)
     for ix, max_ctr in enumerate(sorted_ix):
@@ -55,15 +70,30 @@ def find_largest_box(img):
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.01 * peri, True)  # 0.02
 
+        #print("ix", ix)
         if len(approx) == 4:
             logger.info("Found largest box in image")
-            return approx
+
+            if (1 < return_first_n_boxes ): #tofix
+                if return_first_n_boxes > len(boxes):
+                    print("-- ix", ix, len(boxes), f"of area {areas[max_ctr]}"
+                                                   f"of total  area {img_max_area}."
+                          f"namely {areas[max_ctr] / img_max_area * 100:.2f}%")
+                    boxes.append(approx)
+                else:
+                    break
+            else:
+                return approx
         else:
             logger.warning(
                 f"The {ix + 1}th largest contour is not a rectangle")
 
-    logger.error("No box found in image")
-    raise ValueError("No box found in image")
+    if return_first_n_boxes > 1 and len(boxes) > 0:
+        print(f"returning boxes of lenght {len(boxes)}")
+        return boxes
+    else:
+        logger.error("No box found in image")
+        raise ValueError("No box found in image")
 
 
 def correct_perspective(img, box, grid_size):

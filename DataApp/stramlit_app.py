@@ -27,12 +27,21 @@ if uploaded_file is not None:
     threshold_img = prepare_img_for_boundary(img, False)
     if show_threshold_img:
         with thr_col:
-            st.image(threshold_img, caption='Threshold Image.', use_column_width=True,)
+            st.image(threshold_img, caption='Threshold Image.',
+                     use_column_width=True,)
 
-    largest_box = find_largest_box(threshold_img)
+
+    largest_boxes = find_largest_box(threshold_img, return_first_n_boxes=3)
     # in col2 show the image img with the largest box drawn
     img2 = img.copy()
-    cv2.drawContours(img2, [largest_box], 0, (0, 255, 0), 3)
+
+    box_colors = [(0, 255, 0), (0, 0, 255), (255, 0, 0)]
+    print(len(box_colors))
+    print(len(largest_boxes))
+    for ix, box in enumerate(largest_boxes):
+        print(ix, box)
+        cv2.drawContours(img2, [box], 0, box_colors[ix], 3)
+
     with col2:
         st.image(img2, caption='Largest box.', use_column_width=True)
 
