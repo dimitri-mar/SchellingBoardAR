@@ -62,151 +62,166 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y):
             cv2.imwrite(
                 os.path.join(cells_dir, f"cell_{i}_{j}_{process_name}.png"),
                 cell)
+def second_page():
+    import streamlit as st
+    st.title("Second Page")
+    st.write("Here's our second page")
 
+    # let's correct the perspective
+    img = st.session_state["img"]
+    grid_x = st.session_state["grid_x"]
+    grid_y = st.session_state["grid_y"]
+    largest_box = st.session_state["largest_box"]
 
-
-
-st.set_page_config(layout="wide",
-                       page_title="The Schelling Board Augmented Reality :)",)
-
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
-
-
-
-
-with st.sidebar:
-    uploaded_file = st.file_uploader("Choose a file")
-    sb_content = st.empty( )
-    sb_container = sb_content.container()
-
-empty_main = st.empty()
-main_container = empty_main.container()
-
-box_colors = [(0, 255, 0), (0, 0, 255), (255, 0, 0)]
-color_names = ["green", "blue", "red"]
-
-
-# load the uploaded image into opencv
-if uploaded_file is not None:
+    print(grid_x, grid_y, largest_box)
+    img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
+    cols2 = st.columns(3, )
+    with cols2[0]:
+        st.image(img_corrected, caption='Corrected Image.', )
 
     with st.sidebar:
-        show_threshold_img = sb_container.checkbox('Threshold_img', value=False)
-        with sb_container.expander("adjust preprocessing parameters"):
-            blurry_kernel_size = st.number_input('reduce the noise',
-                                                 min_value=0,
-                                                 value=5, step=2)
-            adaptive_threshold_mode = st.selectbox(
-                "threshold method",
-                ("adaptive_mean", "adaptive_gaussian") )
-            dilate_kernel_size = st.number_input('increase thickness',
-                                                 min_value=0,
-                                                 value=3)
-            dilate_iterations = st.number_input('times you repeate increase thickness',
-                                                min_value=0,
-                                                value=1)
-        with sb_container.form("grid_selection_form"):
-            checkbox_val = st.radio(
-                "Select the box that contains only the grid:",
-                key="visibility",
-                options=(["no box matches the grid",] + color_names)
-            )
-            # Every form must have a submit button.
-            submitted = st.form_submit_button("Submit")
-            if submitted:
+        prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
+        new_image = st.button("new picture", key="new_picture")
 
-                if checkbox_val == "no box matches the grid":
-                    #grid_string = "no box matches the grid"
-                    st.write("Please adjust the parameters or take a new picture")
-                else:
-                    def find_color_ix(color_name):
-                        return color_names.index(color_name)
+        if prepare_dataset:
+            print("prepare_dataset clicked!! ")
+            save_img_as_dataset(img, img_corrected,
+                                st.session_state["img_file_name"],
+                                grid_x, grid_y)
+        if new_image:
+            st.session_state["submitted"] = False
+            st.experimental_rerun()
 
 
-                    st.session_state["largest_box"] = \
-                        st.session_state["largest_box"][find_color_ix(checkbox_val)]
-                    sb_content.empty()
-                    main_container.empty()
-        cols =  sb_container.columns(3, )
-        with cols[0]:
-            grid_x = sb_container.number_input('x grid',
-                                         min_value=1, max_value=50,
-                                         value=21, step=1, key="x_grid",
-                                         help="number of columns in the grid",
-                                       label_visibility="visible")
-        with cols[2]:
-            grid_y = sb_container.number_input("y grid",
-                                         min_value=1, max_value=50,
-                                         value=25, step=1, key="y_grid",
-                                         help="number of columns in the grid",
-                                       label_visibility="visible")
-        st.session_state["grid_x"] = grid_x
-        st.session_state["grid_y"] = grid_y
+def starting_page():
+    import streamlit as st
 
-    if not submitted or checkbox_val == "no box matches the grid":
-        if show_threshold_img:
-            col1, thr_col, col2 = main_container.columns(3)
-        else:
-            col1, col2 = main_container.columns(2)
+    st.set_page_config(layout="wide",
+                           page_title="The Schelling Board Augmented Reality :)",)
 
-        img = read_loaded_img(uploaded_file)
-        st.session_state["img"] = img
-        st.session_state["file_name"] = uploaded_file.name
-        with col1:
-            st.image(img, caption='Uploaded Image.', use_column_width=True, )
-
-        threshold_img = prepare_img_for_boundary(img, False,
-                                                 blurry_kernel_size,
-                                                 adaptive_threshold_mode,
-                                                 dilate_kernel_size,
-                                                 dilate_iterations)
-
-        if show_threshold_img:
-            with thr_col:
-                st.image(threshold_img, caption='Threshold Image.',
-                         use_column_width=True, )
-
-        largest_boxes = find_largest_box(threshold_img, return_first_n_boxes=3)
-        st.session_state["largest_box"] = largest_boxes
-        # in col2 show the image img with the largest box drawn
-        img2 = img.copy()
+    hide_st_style = """
+                <style>
+                #MainMenu {visibility: hidden;}
+                footer {visibility: hidden;}
+                header {visibility: hidden;}
+                </style>
+                """
+    st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
-        print(len(box_colors))
-        print(len(largest_boxes))
-        for ix, box in enumerate(largest_boxes):
-            print(ix, box)
-            cv2.drawContours(img2, [box], 0, box_colors[ix], 15)
 
-        with col2:
-            st.image(img2, caption='Largest box.', use_column_width=True)
 
-    else:
-        # let's correct the perspective
-        img = st.session_state["img"]
-        grid_x = st.session_state["grid_x"]
-        grid_y = st.session_state["grid_y"]
-        largest_box = st.session_state["largest_box"]
+    with st.sidebar:
+        uploaded_file = st.file_uploader("Choose a file")
+        sb_content = st.empty( )
+        sb_container = sb_content.container()
 
-        img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
-        cols2 = main_container.columns(3, )
-        with cols2[0]:
-            st.image(img_corrected, caption='Corrected Image.', )
+    empty_main = st.empty()
+    main_container = empty_main.container()
+
+    box_colors = [(0, 255, 0), (0, 0, 255), (255, 0, 0)]
+    color_names = ["green", "blue", "red"]
+
+
+    # load the uploaded image into opencv
+    if uploaded_file is not None:
 
         with st.sidebar:
-            prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
+            show_threshold_img = sb_container.checkbox('Threshold_img', value=False)
+            with sb_container.expander("adjust preprocessing parameters"):
+                blurry_kernel_size = st.number_input('reduce the noise',
+                                                     min_value=0,
+                                                     value=5, step=2)
+                adaptive_threshold_mode = st.selectbox(
+                    "threshold method",
+                    ("adaptive_mean", "adaptive_gaussian") )
+                dilate_kernel_size = st.number_input('increase thickness',
+                                                     min_value=0,
+                                                     value=3)
+                dilate_iterations = st.number_input('times you repeate increase thickness',
+                                                    min_value=0,
+                                                    value=1)
+            with sb_container.form("grid_selection_form"):
+                checkbox_val = st.radio(
+                    "Select the box that contains only the grid:",
+                    key="visibility",
+                    options=(["no box matches the grid",] + color_names)
+                )
+                # Every form must have a submit button.
+                submitted = st.form_submit_button("Submit")
+                if submitted:
 
-            if prepare_dataset:
-                print("prepare_dataset clicked!! ")
-                save_img_as_dataset(img, img_corrected,
-                                    st.session_state["img_file_name"],
-                                    grid_x, grid_y)
+                    if checkbox_val == "no box matches the grid":
+                        #grid_string = "no box matches the grid"
+                        st.write("Please adjust the parameters or take a new picture")
+                    else:
+                        st.session_state["submitted"] = True
+                        def find_color_ix(color_name):
+                            return color_names.index(color_name)
+
+                        st.session_state["largest_box"] = \
+                            st.session_state["largest_box"][find_color_ix(checkbox_val)]
+                        st.experimental_rerun()
+                        #sb_content.empty()
+                        #main_container.empty()
+            cols =  sb_container.columns(3, )
+            with cols[0]:
+                grid_x = sb_container.number_input('x grid',
+                                             min_value=1, max_value=50,
+                                             value=20, step=1, key="x_grid",
+                                             help="number of columns in the grid",
+                                           label_visibility="visible")
+            with cols[2]:
+                grid_y = sb_container.number_input("y grid",
+                                             min_value=1, max_value=50,
+                                             value=20, step=1, key="y_grid",
+                                             help="number of columns in the grid",
+                                           label_visibility="visible")
+            st.session_state["grid_x"] = grid_x
+            st.session_state["grid_y"] = grid_y
+
+        if not submitted or checkbox_val == "no box matches the grid":
+            if show_threshold_img:
+                col1, thr_col, col2 = main_container.columns(3)
             else:
-                pass
+                col1, col2 = main_container.columns(2)
 
+            img = read_loaded_img(uploaded_file)
+            st.session_state["img"] = img
+            st.session_state["file_name"] = uploaded_file.name
+            with col1:
+                st.image(img, caption='Uploaded Image.', use_column_width=True, )
+
+            threshold_img = prepare_img_for_boundary(img, False,
+                                                     blurry_kernel_size,
+                                                     adaptive_threshold_mode,
+                                                     dilate_kernel_size,
+                                                     dilate_iterations)
+
+            if show_threshold_img:
+                with thr_col:
+                    st.image(threshold_img, caption='Threshold Image.',
+                             use_column_width=True, )
+
+            largest_boxes = find_largest_box(threshold_img, return_first_n_boxes=3)
+            st.session_state["largest_box"] = largest_boxes
+            # in col2 show the image img with the largest box drawn
+            img2 = img.copy()
+
+
+            print(len(box_colors))
+            print(len(largest_boxes))
+            for ix, box in enumerate(largest_boxes):
+                print(ix, box)
+                cv2.drawContours(img2, [box], 0, box_colors[ix], 15)
+
+            with col2:
+                st.image(img2, caption='Largest box.', use_column_width=True)
+
+
+
+if ("submitted" not in st.session_state) or \
+        (not st.session_state["submitted"]):
+   starting_page()
+else:
+    second_page()
