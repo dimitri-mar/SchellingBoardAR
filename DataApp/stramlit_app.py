@@ -11,6 +11,8 @@ from VisualDetector.Img2Game import parse_grid_string
 from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
     find_largest_box, correct_perspective
 
+from VisualDetector.ImageLabelPrediction import detect_labels
+
 @st.cache
 def read_loaded_img(uploaded_file):
     imageBGR =  cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8),
@@ -95,6 +97,10 @@ def second_page():
     with cols2[0]:
         st.image(img_corrected, caption='Corrected Image.', )
 
+    with cols2[1]:
+        outcome_lbl, img_labelled = detect_labels(img_corrected, grid_x, grid_y,
+                      model="../models/cnn_dataset_1.h5", return_label_img=True)
+        st.image(img_labelled, caption='Labelled Image.' )
     with st.sidebar:
         prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
         new_image = st.button("new picture", key="new_picture")
