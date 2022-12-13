@@ -5,7 +5,7 @@ from loguru import logger
 
 def prepare_img_for_boundary(img, show=False,
                              blurry_kernel_size=5,
-                             adaptive_threshold_mode = "adaptive_gaussian",
+                             adaptive_threshold_mode = "adaptive_mean",
                              dilate_kernel_size=3,
                              dilate_iterations=1,
                              ):
@@ -19,17 +19,23 @@ def prepare_img_for_boundary(img, show=False,
         thresh = cv2.adaptiveThreshold(blur, 255,
                                        cv2.ADAPTIVE_THRESH_GAUSSIAN_C, \
                                        cv2.THRESH_BINARY, 11, 2)
+        kernel = np.ones((dilate_kernel_size, dilate_kernel_size), np.uint8)
+
+        thresh2 = cv2.dilate(255-thresh, kernel, iterations=dilate_iterations)
+        thresh2 = thresh2
     elif adaptive_threshold_mode == "adaptive_mean":
         thresh = cv2.adaptiveThreshold(blur, 255, 1, 1, 11, 2)
+        kernel = np.ones((dilate_kernel_size, dilate_kernel_size), np.uint8)
+
+        thresh2 = cv2.dilate(thresh, kernel, iterations=dilate_iterations)
+        thresh2 = thresh2
     else:
         raise ValueError("adaptive_threshold_mode not recognized")
 
     # remove small boundary discontinuities
     # kernel = np.ones((3, 3), np.uint8)
-    kernel = np.ones((dilate_kernel_size, dilate_kernel_size), np.uint8)
 
-    thresh2 = cv2.dilate(thresh, kernel, iterations=dilate_iterations)
-    thresh2 = thresh
+
 
     if show:
         cv2.imshow('thresh2', thresh2)
@@ -76,7 +82,7 @@ def find_largest_box(img, return_first_n_boxes = 1):
 
             if (1 < return_first_n_boxes ): #tofix
                 if return_first_n_boxes > len(boxes):
-                    print("-- ix", ix, len(boxes), f"of area {areas[max_ctr]}"
+                    logger.info(f"-- ix {ix} {len(boxes)} of area {areas[max_ctr]}"
                                                    f"of total  area {img_max_area}."
                           f"namely {areas[max_ctr] / img_max_area * 100:.2f}%")
                     boxes.append(approx)
@@ -89,7 +95,7 @@ def find_largest_box(img, return_first_n_boxes = 1):
                 f"The {ix + 1}th largest contour is not a rectangle")
 
     if return_first_n_boxes > 1 and len(boxes) > 0:
-        print(f"returning boxes of lenght {len(boxes)}")
+        # print(f"returning boxes of lenght {len(boxes)}")
         return boxes
     else:
         logger.error("No box found in image")

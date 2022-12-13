@@ -13,7 +13,10 @@ from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
 
 @st.cache
 def read_loaded_img(uploaded_file):
-    return cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), 1)
+    imageBGR =  cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8),
+                        cv2.IMREAD_COLOR)
+    imageRGB = cv2.cvtColor(imageBGR , cv2.COLOR_BGR2RGB)
+    return imageRGB
 
 
 
@@ -64,6 +67,19 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y):
                 cell)
 def second_page():
     import streamlit as st
+    st.set_page_config(layout="wide",
+                       page_title="The Schelling Board Augmented Reality :)", )
+
+    hide_st_style = """
+                    <style>
+                    #MainMenu {visibility: hidden;}
+                    footer {visibility: hidden;}
+                    header {visibility: hidden;}
+                    </style>
+                    """
+    st.markdown(hide_st_style, unsafe_allow_html=True)
+
+
     st.title("Second Page")
     st.write("Here's our second page")
 
@@ -73,7 +89,7 @@ def second_page():
     grid_y = st.session_state["grid_y"]
     largest_box = st.session_state["largest_box"]
 
-    print(grid_x, grid_y, largest_box)
+    # print(grid_x, grid_y, largest_box)
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
     cols2 = st.columns(3, )
     with cols2[0]:
@@ -84,7 +100,6 @@ def second_page():
         new_image = st.button("new picture", key="new_picture")
 
         if prepare_dataset:
-            print("prepare_dataset clicked!! ")
             save_img_as_dataset(img, img_corrected,
                                 st.session_state["img_file_name"],
                                 grid_x, grid_y)
@@ -188,7 +203,7 @@ def starting_page():
 
             img = read_loaded_img(uploaded_file)
             st.session_state["img"] = img
-            st.session_state["file_name"] = uploaded_file.name
+            st.session_state["img_file_name"] = uploaded_file.name
             with col1:
                 st.image(img, caption='Uploaded Image.', use_column_width=True, )
 
@@ -208,11 +223,8 @@ def starting_page():
             # in col2 show the image img with the largest box drawn
             img2 = img.copy()
 
-
-            print(len(box_colors))
-            print(len(largest_boxes))
             for ix, box in enumerate(largest_boxes):
-                print(ix, box)
+                # print(ix, box)
                 cv2.drawContours(img2, [box], 0, box_colors[ix], 15)
 
             with col2:
