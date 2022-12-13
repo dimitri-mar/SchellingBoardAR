@@ -82,8 +82,11 @@ def second_page():
     st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
-    st.title("Second Page")
-    st.write("Here's our second page")
+    #st.title("Labelled Board")
+    st.markdown("The board is labelled with the following labels: \n"
+    "`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, "
+                "`R_S`: Red Sad, "
+             "`Emp`: Empty")
 
     # let's correct the perspective
     img = st.session_state["img"]
@@ -93,14 +96,15 @@ def second_page():
 
     # print(grid_x, grid_y, largest_box)
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
-    cols2 = st.columns(3, )
-    with cols2[0]:
-        st.image(img_corrected, caption='Corrected Image.', )
+    #cols2 = st.columns(3, )
+    #with cols2[0]:
+        #st.image(img_corrected, caption='Corrected Image.', )
 
-    with cols2[1]:
-        outcome_lbl, img_labelled = detect_labels(img_corrected, grid_x, grid_y,
-                      model="../models/cnn_dataset_1.h5", return_label_img=True)
-        st.image(img_labelled, caption='Labelled Image.' )
+    #with cols2[1]:
+    outcome_lbl, img_labelled = detect_labels(img_corrected, grid_x, grid_y,
+                  model="../models/cnn_dataset_1.h5", return_label_img=True)
+    st.image(img_labelled, caption='Labelled Image.' )
+
     with st.sidebar:
         prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
         new_image = st.button("new picture", key="new_picture")
@@ -166,7 +170,8 @@ def starting_page():
                 checkbox_val = st.radio(
                     "Select the box that contains only the grid:",
                     key="visibility",
-                    options=(["no box matches the grid",] + color_names)
+                    options=(["no box matches the grid",] + color_names),
+                    index=1
                 )
                 # Every form must have a submit button.
                 submitted = st.form_submit_button("Submit")
