@@ -11,7 +11,7 @@ from VisualDetector.Img2Game import parse_grid_string
 from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
     find_largest_box, correct_perspective
 
-from VisualDetector.ImageLabelPrediction import detect_labels
+from VisualDetector.ImageLabelPrediction import detect_labels, detect_labels_fast
 
 @st.cache
 def read_loaded_img(uploaded_file):
@@ -49,6 +49,7 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y):
 
     # save original image
     cv2.imwrite(os.path.join(process_dir, "original.png"), img)
+    cv2.imwrite(os.path.join(process_dir, "corrected.png"), img_corrected)
 
     cell_size = int(img_corrected.shape[1] / grid_x)
     assert cell_size == int(img_corrected.shape[0] / grid_y), \
@@ -96,14 +97,18 @@ def second_page():
 
     # print(grid_x, grid_y, largest_box)
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
-    #cols2 = st.columns(3, )
-    #with cols2[0]:
-        #st.image(img_corrected, caption='Corrected Image.', )
+    cols2 = st.columns(3, )
+    with cols2[0]:
+        outcome_lbl_sl, img_labelled_sl = detect_labels(img_corrected, grid_x,
+                                                       grid_y,
+                                                       model="../models/cnn_dataset_1.h5",
+                                                       return_label_img=True)
+        st.image(img_labelled_sl, caption='Labelled Image.')
 
-    #with cols2[1]:
-    outcome_lbl, img_labelled = detect_labels(img_corrected, grid_x, grid_y,
-                  model="../models/cnn_dataset_1.h5", return_label_img=True)
-    st.image(img_labelled, caption='Labelled Image.' )
+    with cols2[1]:
+        outcome_lbl, img_labelled = detect_labels_fast(img_corrected, grid_x, grid_y,
+                      model="../models/cnn_dataset_1.h5", return_label_img=True)
+        st.image(img_labelled, caption='Labelled Image.' )
 
     with st.sidebar:
         prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
