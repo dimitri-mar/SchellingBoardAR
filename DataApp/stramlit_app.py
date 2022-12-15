@@ -12,7 +12,7 @@ from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
     find_largest_box, correct_perspective
 
 from VisualDetector.ImageLabelPrediction import detect_labels, detect_labels_fast
-from VisualDetector.VisualUtils import overlap_matrix_to_picture
+from VisualDetector.VisualUtils import overlap_matrix_to_picture, overlap_bool_matrix_to_picture
 
 from SchellingModel.SchellingGame import SchellingGame
 
@@ -100,14 +100,8 @@ def second_page():
 
     # print(grid_x, grid_y, largest_box)
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
-    cols2 = st.columns(3, )
-    with cols2[0]:
-        # outcome_lbl_sl, img_labelled_sl = detect_labels(img_corrected, grid_x,
-        #                                                grid_y,
-        #                                                model="../models/cnn_dataset_1.h5",
-        #                                                return_label_img=True)
-        # st.image(img_labelled_sl, caption='Labelled Image.')
-        pass
+    cols2 = st.columns(2, )
+
 
     with cols2[1]:
         board = detect_labels_fast(img_corrected, grid_x, grid_y,
@@ -115,6 +109,15 @@ def second_page():
         annotated_img = \
             overlap_matrix_to_picture(img_corrected, board.to_str_matrix())
         st.image(annotated_img, caption='Labelled Image.' )
+    with cols2[0]:
+        wrong_moods = board.find_wrong_position()
+        st.write(f"Number of wrong moods: {np.sum(wrong_moods)}")
+
+        wrong_image = \
+            overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
+        st.image(wrong_image, caption='Wrong moods.' )
+
+
 
     with st.sidebar:
         prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
