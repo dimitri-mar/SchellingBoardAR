@@ -9,7 +9,7 @@ from keras_preprocessing import image
 
 import cv2
 
-from VisualDetector.VisualUtils import overlap_matrix_to_picture
+from SchellingModel.SchellingGame import SchellingBoard
 
 target_size = (75, 75)
 
@@ -143,21 +143,39 @@ def generate_cell_imgs_vect(img_corrected, grid_x, grid_y):
     return dataset
 
 
-def detect_labels_fast(corrected_image,  grid_x, grid_y, model,
-                       return_label_img=False):
-    # TODO Bug for rectangular images
+def decode_labels(label_matrix):
     labels = {'B_H': 0, 'B_S': 1, 'Emp': 2, 'R_H': 3, 'R_S': 4}
     int2label = {v: k for k, v in labels.items()}
+    
+    
+    teams = np.zeros_like(label_matrix)
+    blue_team = (label_matrix ==0) | (label_matrix ==1)
+    red_team = (label_matrix == 3) | (label_matrix == 4)
+    
+    teams[blue_team] = 1
+    teams[red_team] = 2
+    
+    moods = np.zeros_like(label_matrix)
+    happy = (label_matrix == 0) | (label_matrix == 3)
+    sad = (label_matrix == 1) | (label_matrix == 4)
+    moods[happy] = 1
+    moods[sad] = -1
+
+    return teams, moods
+    
+
+def detect_labels_fast(corrected_image,  grid_x, grid_y, model ):
+    # TODO Bug for rectangular images
 
     logger.info("loading model")
     model = tf.keras.models.load_model(model)
 
     logger.info("loading image")
     cells = generate_cell_imgs_vect(corrected_image, grid_x, grid_y)
-    import matplotlib.pylab as plt
-    plt.figure(figsize=(10, 10))
-    plt.imshow(cells[20])
-    plt.savefig("test.png")
+    # import matplotlib.pylab as plt
+    # plt.figure(figsize=(10, 10))
+    # plt.imshow(cells[20])
+    # plt.savefig("test.png")
     print(f"cells shape: {cells.shape} and cells[20] shape: {cells[20].shape}")
 
     logger.info(f"predicting all cells at once")
@@ -165,13 +183,12 @@ def detect_labels_fast(corrected_image,  grid_x, grid_y, model,
     x = cells / 255
     class_probabilities = model.predict(x)
 
-    most_probable_classes = np.argmax(class_probabilities, axis=1)
+    most_probable_classes = class_probabilities.argmax(axis=-1)#np.argmax(class_probabilities, axis=1)
     label_matrix = most_probable_classes.reshape((grid_y, grid_x))
+    
+    teams, moods = decode_labels(label_matrix)
+    
+    return SchellingBoard(teams, moods)
 
-    if return_label_img:
-        img2 = overlap_matrix_to_picture( corrected_image, label_matrix)
-        return label_matrix, img2
-
-    return label_matrix
 
 

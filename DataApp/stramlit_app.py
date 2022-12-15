@@ -12,6 +12,9 @@ from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
     find_largest_box, correct_perspective
 
 from VisualDetector.ImageLabelPrediction import detect_labels, detect_labels_fast
+from VisualDetector.VisualUtils import overlap_matrix_to_picture
+
+from SchellingModel.SchellingGame import SchellingGame
 
 @st.cache
 def read_loaded_img(uploaded_file):
@@ -107,9 +110,11 @@ def second_page():
         pass
 
     with cols2[1]:
-        outcome_lbl, img_labelled = detect_labels_fast(img_corrected, grid_x, grid_y,
-                      model="../models/cnn_dataset_1.h5", return_label_img=True)
-        st.image(img_labelled, caption='Labelled Image.' )
+        board = detect_labels_fast(img_corrected, grid_x, grid_y,
+                      model="../models/cnn_dataset_1.h5")
+        annotated_img = \
+            overlap_matrix_to_picture(img_corrected, board.to_str_matrix())
+        st.image(annotated_img, caption='Labelled Image.' )
 
     with st.sidebar:
         prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")

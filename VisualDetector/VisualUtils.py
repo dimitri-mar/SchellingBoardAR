@@ -15,11 +15,12 @@ def overlap_matrix_to_picture(img, overlap_matrix,
         for x_ix in range(overlap_matrix.shape[1]):
             x = x_ix * dx + dx * (0.3)
             y = y_ix * dy + dy * (0.7)
+            # import pdb ; pdb.set_trace()
             cv2.putText(img2,
-                        str(overlap_matrix[y_ix, x_ix]),
+                        overlap_matrix[y_ix, x_ix],
                         (int(x), int(y)),
                         cv2.FONT_HERSHEY_SIMPLEX, 1.1, color, thickness_text)
-            if draw_cell:
+            if draw_cell and overlap_matrix[y_ix, x_ix] != "":
                 cv2.rectangle(img2, (x_ix * dx, y_ix * dy),
                                 ((x_ix + 1) * dx, (y_ix + 1) * dy),
                                 color, thickness_cell)
