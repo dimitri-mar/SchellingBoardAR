@@ -85,12 +85,22 @@ def second_page():
                     """
     st.markdown(hide_st_style, unsafe_allow_html=True)
 
+    with st.sidebar:
+        prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
+        new_image = st.button("new picture", key="new_picture")
+
+        show_labels = st.checkbox("Show labels", value=False)
+
+        if prepare_dataset:
+            save_img_as_dataset(img, img_corrected,
+                                st.session_state["img_file_name"],
+                                grid_x, grid_y)
+        if new_image:
+            st.session_state["submitted"] = False
+            st.experimental_rerun()
 
     #st.title("Labelled Board")
-    st.markdown("The board is labelled with the following labels: \n"
-    "`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, "
-                "`R_S`: Red Sad, "
-             "`Emp`: Empty")
+
 
     # let's correct the perspective
     img = st.session_state["img"]
@@ -100,36 +110,38 @@ def second_page():
 
     # print(grid_x, grid_y, largest_box)
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
-    cols2 = st.columns(2, )
+    board = detect_labels_fast(img_corrected, grid_x, grid_y,
+                               model="../models/cnn_dataset_1.h5")
 
+    wrong_moods = board.find_wrong_position()
+    if show_labels:
+        cols2 = st.columns(2, )
+        with cols2[1]:
+            st.markdown("The board is labelled with the following labels: \n"
+                        "`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, "
+                        "`R_S`: Red Sad, "
+                        "`Emp`: Empty")
 
-    with cols2[1]:
-        board = detect_labels_fast(img_corrected, grid_x, grid_y,
-                      model="../models/cnn_dataset_1.h5")
-        annotated_img = \
-            overlap_matrix_to_picture(img_corrected, board.to_str_matrix())
-        st.image(annotated_img, caption='Labelled Image.' )
-    with cols2[0]:
-        wrong_moods = board.find_wrong_position()
+            annotated_img = \
+                overlap_matrix_to_picture(img_corrected, board.to_str_matrix())
+            st.image(annotated_img, caption='Labelled Image.' )
+        with cols2[0]:
+            st.write(f"Number of wrong moods: {np.sum(wrong_moods)}")
+
+            wrong_image = \
+                overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
+            st.image(wrong_image, caption='Wrong moods.' )
+    else:
         st.write(f"Number of wrong moods: {np.sum(wrong_moods)}")
 
         wrong_image = \
             overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
-        st.image(wrong_image, caption='Wrong moods.' )
+        st.image(wrong_image, caption='Wrong moods.')
 
 
 
-    with st.sidebar:
-        prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
-        new_image = st.button("new picture", key="new_picture")
 
-        if prepare_dataset:
-            save_img_as_dataset(img, img_corrected,
-                                st.session_state["img_file_name"],
-                                grid_x, grid_y)
-        if new_image:
-            st.session_state["submitted"] = False
-            st.experimental_rerun()
+
 
 
 def starting_page():
