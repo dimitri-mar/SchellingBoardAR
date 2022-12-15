@@ -99,11 +99,12 @@ def second_page():
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
     cols2 = st.columns(3, )
     with cols2[0]:
-        outcome_lbl_sl, img_labelled_sl = detect_labels(img_corrected, grid_x,
-                                                       grid_y,
-                                                       model="../models/cnn_dataset_1.h5",
-                                                       return_label_img=True)
-        st.image(img_labelled_sl, caption='Labelled Image.')
+        # outcome_lbl_sl, img_labelled_sl = detect_labels(img_corrected, grid_x,
+        #                                                grid_y,
+        #                                                model="../models/cnn_dataset_1.h5",
+        #                                                return_label_img=True)
+        # st.image(img_labelled_sl, caption='Labelled Image.')
+        pass
 
     with cols2[1]:
         outcome_lbl, img_labelled = detect_labels_fast(img_corrected, grid_x, grid_y,
