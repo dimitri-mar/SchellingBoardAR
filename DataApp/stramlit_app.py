@@ -1,33 +1,28 @@
 """ A stramlit app that displays the loaded picture and the result of the
  grid detection """
-import streamlit as st
-import cv2
-import numpy as np
-
-from loguru import logger
 import os
 
-from VisualDetector.Img2Game import parse_grid_string
+import cv2
+import numpy as np
+import streamlit as st
+from loguru import logger
+
+from VisualDetector.ImageLabelPrediction import detect_labels_fast
 from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
     find_largest_box, correct_perspective
+from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
+    overlap_bool_matrix_to_picture
 
-from VisualDetector.ImageLabelPrediction import detect_labels, detect_labels_fast
-from VisualDetector.VisualUtils import overlap_matrix_to_picture, overlap_bool_matrix_to_picture
-
-from SchellingModel.SchellingGame import SchellingGame
 
 @st.cache
 def read_loaded_img(uploaded_file):
-    imageBGR =  cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8),
-                        cv2.IMREAD_COLOR)
-    imageRGB = cv2.cvtColor(imageBGR , cv2.COLOR_BGR2RGB)
+    imageBGR = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8),
+                            cv2.IMREAD_COLOR)
+    imageRGB = cv2.cvtColor(imageBGR, cv2.COLOR_BGR2RGB)
     return imageRGB
 
 
-
-
 def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y):
-
     # TODO add uniqe id to the file name for future refererence
     output_dir = "data"
     # create a directory in output_dir if it does not exist
@@ -56,7 +51,7 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y):
 
     cell_size = int(img_corrected.shape[1] / grid_x)
     assert cell_size == int(img_corrected.shape[0] / grid_y), \
-            "cell size is not the same for x and y"
+        "cell size is not the same for x and y"
     logger.info(f"Cell size: {cell_size}")
 
     # save the cells in a subdirectory
@@ -71,6 +66,8 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y):
             cv2.imwrite(
                 os.path.join(cells_dir, f"cell_{i}_{j}_{process_name}.png"),
                 cell)
+
+
 def second_page():
     import streamlit as st
     st.set_page_config(layout="wide",
@@ -99,8 +96,7 @@ def second_page():
             st.session_state["submitted"] = False
             st.experimental_rerun()
 
-    #st.title("Labelled Board")
-
+    # st.title("Labelled Board")
 
     # let's correct the perspective
     img = st.session_state["img"]
@@ -124,31 +120,27 @@ def second_page():
 
             annotated_img = \
                 overlap_matrix_to_picture(img_corrected, board.to_str_matrix())
-            st.image(annotated_img, caption='Labelled Image.' )
+            st.image(annotated_img, caption='Labelled Image.')
         with cols2[0]:
             st.write(f"Number of wrong moods: {np.sum(wrong_moods)}")
 
             wrong_image = \
                 overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
-            st.image(wrong_image, caption='Wrong moods.' )
+            st.image(wrong_image, caption='Wrong moods.')
     else:
-        st.write(f"Number of wrong moods: {np.sum(wrong_moods)}")
+        st.markdown(f"Number of wrong moods: {np.sum(wrong_moods)}\n"
+                    f"please flip the coin marked with an `X` to the correct ")
 
         wrong_image = \
             overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
         st.image(wrong_image, caption='Wrong moods.')
 
 
-
-
-
-
-
 def starting_page():
     import streamlit as st
 
     st.set_page_config(layout="wide",
-                           page_title="The Schelling Board Augmented Reality :)",)
+                       page_title="The Schelling Board Augmented Reality :)", )
 
     hide_st_style = """
                 <style>
@@ -159,12 +151,9 @@ def starting_page():
                 """
     st.markdown(hide_st_style, unsafe_allow_html=True)
 
-
-
-
     with st.sidebar:
         uploaded_file = st.file_uploader("Choose a file")
-        sb_content = st.empty( )
+        sb_content = st.empty()
         sb_container = sb_content.container()
 
     empty_main = st.empty()
@@ -173,30 +162,31 @@ def starting_page():
     box_colors = [(0, 255, 0), (0, 0, 255), (255, 0, 0)]
     color_names = ["green", "blue", "red"]
 
-
     # load the uploaded image into opencv
     if uploaded_file is not None:
 
         with st.sidebar:
-            show_threshold_img = sb_container.checkbox('Threshold_img', value=False)
+            show_threshold_img = sb_container.checkbox('Threshold_img',
+                                                       value=False)
             with sb_container.expander("adjust preprocessing parameters"):
                 blurry_kernel_size = st.number_input('reduce the noise',
                                                      min_value=0,
                                                      value=5, step=2)
                 adaptive_threshold_mode = st.selectbox(
                     "threshold method",
-                    ("adaptive_mean", "adaptive_gaussian") )
+                    ("adaptive_mean", "adaptive_gaussian"))
                 dilate_kernel_size = st.number_input('increase thickness',
                                                      min_value=0,
                                                      value=3)
-                dilate_iterations = st.number_input('times you repeate increase thickness',
-                                                    min_value=0,
-                                                    value=1)
+                dilate_iterations = st.number_input(
+                    'times you repeate increase thickness',
+                    min_value=0,
+                    value=1)
             with sb_container.form("grid_selection_form"):
                 checkbox_val = st.radio(
                     "Select the box that contains only the grid:",
                     key="visibility",
-                    options=(["no box matches the grid",] + color_names),
+                    options=(["no box matches the grid", ] + color_names),
                     index=1
                 )
                 # Every form must have a submit button.
@@ -204,31 +194,36 @@ def starting_page():
                 if submitted:
 
                     if checkbox_val == "no box matches the grid":
-                        #grid_string = "no box matches the grid"
-                        st.write("Please adjust the parameters or take a new picture")
+                        # grid_string = "no box matches the grid"
+                        st.write(
+                            "Please adjust the parameters or take a new picture")
                     else:
                         st.session_state["submitted"] = True
+
                         def find_color_ix(color_name):
                             return color_names.index(color_name)
 
                         st.session_state["largest_box"] = \
-                            st.session_state["largest_box"][find_color_ix(checkbox_val)]
+                            st.session_state["largest_box"][
+                                find_color_ix(checkbox_val)]
                         st.experimental_rerun()
-                        #sb_content.empty()
-                        #main_container.empty()
-            cols =  sb_container.columns(3, )
+                        # sb_content.empty()
+                        # main_container.empty()
+            cols = sb_container.columns(3, )
             with cols[0]:
                 grid_x = sb_container.number_input('x grid',
-                                             min_value=1, max_value=50,
-                                             value=20, step=1, key="x_grid",
-                                             help="number of columns in the grid",
-                                           label_visibility="visible")
+                                                   min_value=1, max_value=50,
+                                                   value=20, step=1,
+                                                   key="x_grid",
+                                                   help="number of columns in the grid",
+                                                   label_visibility="visible")
             with cols[2]:
                 grid_y = sb_container.number_input("y grid",
-                                             min_value=1, max_value=50,
-                                             value=20, step=1, key="y_grid",
-                                             help="number of columns in the grid",
-                                           label_visibility="visible")
+                                                   min_value=1, max_value=50,
+                                                   value=20, step=1,
+                                                   key="y_grid",
+                                                   help="number of columns in the grid",
+                                                   label_visibility="visible")
             st.session_state["grid_x"] = grid_x
             st.session_state["grid_y"] = grid_y
 
@@ -242,7 +237,8 @@ def starting_page():
             st.session_state["img"] = img
             st.session_state["img_file_name"] = uploaded_file.name
             with col1:
-                st.image(img, caption='Uploaded Image.', use_column_width=True, )
+                st.image(img, caption='Uploaded Image.',
+                         use_column_width=True, )
 
             threshold_img = prepare_img_for_boundary(img, False,
                                                      blurry_kernel_size,
@@ -255,7 +251,8 @@ def starting_page():
                     st.image(threshold_img, caption='Threshold Image.',
                              use_column_width=True, )
 
-            largest_boxes = find_largest_box(threshold_img, return_first_n_boxes=3)
+            largest_boxes = find_largest_box(threshold_img,
+                                             return_first_n_boxes=3)
             st.session_state["largest_box"] = largest_boxes
             # in col2 show the image img with the largest box drawn
             img2 = img.copy()
@@ -268,9 +265,8 @@ def starting_page():
                 st.image(img2, caption='Largest box.', use_column_width=True)
 
 
-
 if ("submitted" not in st.session_state) or \
         (not st.session_state["submitted"]):
-   starting_page()
+    starting_page()
 else:
     second_page()
