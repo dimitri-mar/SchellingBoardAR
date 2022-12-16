@@ -264,6 +264,11 @@ def starting_page():
             with col2:
                 st.image(img2, caption='Largest box.', use_column_width=True)
 
+    else:
+        st.markdown("""
+        # Welcome to Schelling Board Augmented Reality 🙂  
+        👈  Please upload a picture of the board.""")
+
 
 if ("submitted" not in st.session_state) or \
         (not st.session_state["submitted"]):
