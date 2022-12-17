@@ -7,14 +7,14 @@ from typing import Union
 class SchellingBoard:
     def __init__(self, teams=None,
                  moods=None,
-                 team_names=["R", "B"],
+                 team_names=["B", "R"],
                  separator="_",
                  mood_map={"H": 1, "S": -1},
                  empty_value=0,
                  ):
 
-        if (np.unique(teams).size - 1) != len(team_names):
-            raise ValueError("teams should contain only the team names")
+        #if (np.unique(teams).size - 1) <= len(team_names):
+        #    raise ValueError("teams should contain only the team names")
 
         assert teams.shape == moods.shape, "teams and moods should have the same shape"
 
@@ -24,6 +24,8 @@ class SchellingBoard:
         self.team_names = team_names
         self.separator = separator
         self.mood_map = mood_map
+        self.mood_map_inv = {v: k for k, v in self.mood_map.items()}
+
 
         self.same_team_neighbours_cache = {}
 
@@ -38,6 +40,35 @@ class SchellingBoard:
     @property
     def grid_y(self):
         return self.teams.shape[0]
+
+    def get_status_cell_str(self, x, y, separator="_"):
+        team = self.teams[y, x]
+        mood = self.moods[y, x]
+
+        if team == self.empty_value:
+            return "Empty"
+        else:
+            return f"{self.get_team_str(team)}{separator}{self.get_team_mood(mood)}"
+
+        return "sad"
+
+    def get_all_classes_str(self, separator="_"):
+        classes = []
+        for team in self.team_names:
+            for mood in self.mood_map.keys():
+                classes.append(f"{team}{separator}{mood}")
+
+        classes.append("Empty")
+
+        return classes
+
+
+    def get_team_str(self, team: Union[int]):
+        return self.team_names[team - 1]
+
+    def get_team_mood(self, mood: Union[int]):
+        return self.mood_map_inv[mood]
+
 
     def parse_team(self, team: Union[int, str]):
         if isinstance(team, str):

@@ -22,7 +22,8 @@ def read_loaded_img(uploaded_file):
     return imageRGB
 
 
-def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y):
+def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y,
+                        schelling_board=None):
     # TODO add uniqe id to the file name for future refererence
     output_dir = "data"
     # create a directory in output_dir if it does not exist
@@ -59,13 +60,24 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y):
     if not os.path.exists(cells_dir):
         os.makedirs(cells_dir)
         logger.info(f"Created directory {cells_dir}")
+        if schelling_board is not None:
+            # create directories for all the classes
+            for class_name in schelling_board.get_all_classes_str():
+                class_dir = os.path.join(cells_dir, class_name)
+                os.makedirs(class_dir)
+                logger.info(f"Created directory {class_dir}")
+
     for i in range(grid_x):
         for j in range(grid_y):
             cell = img_corrected[j * cell_size:(j + 1) * cell_size,
                    i * cell_size:(i + 1) * cell_size]
-            cv2.imwrite(
-                os.path.join(cells_dir, f"cell_{i}_{j}_{process_name}.png"),
-                cell)
+            if schelling_board is not None:
+                class_name = schelling_board.get_status_cell_str(i, j)
+                cell_path = os.path.join(cells_dir, class_name,
+                                         f"cell_{i}_{j}_{process_name}.png")
+            else:
+                cell_path = os.path.join(cells_dir, f"cell_{i}_{j}_{process_name}.png")
+            cv2.imwrite(cell_path, cell)
 
 
 def second_page():
@@ -81,20 +93,10 @@ def second_page():
                     </style>
                     """
     st.markdown(hide_st_style, unsafe_allow_html=True)
-
     with st.sidebar:
-        prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
-        new_image = st.button("new picture", key="new_picture")
-
         show_labels = st.checkbox("Show labels", value=False)
 
-        if prepare_dataset:
-            save_img_as_dataset(img, img_corrected,
-                                st.session_state["img_file_name"],
-                                grid_x, grid_y)
-        if new_image:
-            st.session_state["submitted"] = False
-            st.experimental_rerun()
+
 
     # st.title("Labelled Board")
 
@@ -134,6 +136,18 @@ def second_page():
         wrong_image = \
             overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
         st.image(wrong_image, caption='Wrong moods.')
+
+    with st.sidebar:
+        prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
+        new_image = st.button("new picture", key="new_picture")
+
+        if prepare_dataset:
+            save_img_as_dataset(img, img_corrected,
+                                st.session_state["img_file_name"],
+                                grid_x, grid_y, board,)
+        if new_image:
+            st.session_state["submitted"] = False
+            st.experimental_rerun()
 
 
 def starting_page():
