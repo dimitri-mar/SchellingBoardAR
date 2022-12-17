@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 import streamlit as st
 from loguru import logger
+import datetime, hashlib
 
 from VisualDetector.ImageLabelPrediction import detect_labels_fast
 from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
@@ -16,11 +17,40 @@ from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
 VERSION = "0.1.0"
 
 @st.cache
-def read_loaded_img(uploaded_file):
-    imageBGR = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8),
+def read_loaded_img(uploaded_file, save_img=True):
+    # upload time
+    ct = datetime.datetime.now()
+    timestamp = ct.timestamp()
+
+    up_file = uploaded_file.read()
+    #compute the hash of the uploaded file
+    file_hash = hashlib.md5(up_file).hexdigest()
+    img_file_name_base = os.path.splitext(uploaded_file.name)[0]
+
+    process_name = "app_" + file_hash + "_" + str(timestamp)
+    folder_name = "data/" + process_name
+
+    #imageBGR = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8),
+    #                        cv2.IMREAD_COLOR)
+    imageBGR = cv2.imdecode(np.frombuffer(up_file, np.uint8),
                             cv2.IMREAD_COLOR)
     imageRGB = cv2.cvtColor(imageBGR, cv2.COLOR_BGR2RGB)
-    return imageRGB
+    # compute a hash of the imageRGB
+
+    if save_img:
+        # create a directory in output_dir if it does not exist
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
+        with open(os.path.join(folder_name, uploaded_file.name), "wb") as f:
+            f.write(uploaded_file.getbuffer())
+
+        #let's save the timestamp
+        with open(os.path.join(folder_name, "timestamp.txt"), "w") as f:
+            f.write(str(timestamp))
+
+
+
+    return process_name,  imageRGB
 
 
 def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y,
@@ -248,9 +278,12 @@ def starting_page():
             else:
                 col1, col2 = main_container.columns(2)
 
-            img = read_loaded_img(uploaded_file)
+            process_name, img = read_loaded_img(uploaded_file)
+
             st.session_state["img"] = img
             st.session_state["img_file_name"] = uploaded_file.name
+            st.session_state["process_name"] = process_name
+
             with col1:
                 st.image(img, caption='Uploaded Image.',
                          use_column_width=True, )
