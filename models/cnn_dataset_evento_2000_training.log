@@ -1,0 +1,17 @@
+2022-12-17 20:14:00.499 | INFO     | __main__:train_model:27 - Training model
+2022-12-17 20:14:00.499 | INFO     | __main__:train_model:44 - training image generator configuration:
+2022-12-17 20:14:00.499 | INFO     | __main__:train_model:45 - {'rescale': 0.00392156862745098, 'rotation_range': 10, 'width_shift_range': 0.2, 'height_shift_range': 0.2, 'shear_range': 0.2, 'zoom_range': 0.2, 'horizontal_flip': True, 'fill_mode': 'nearest'}
+2022-12-17 20:14:00.499 | INFO     | __main__:train_model:46 - batch size: 30
+2022-12-17 20:14:00.499 | INFO     | __main__:train_model:47 - picture size: (75, 75)
+2022-12-17 20:14:00.555 | INFO     | __main__:train_model:69 - the classes are dict_keys(['B_H', 'B_S', 'Empty', 'R_H', 'R_S'])
+2022-12-17 20:14:00.555 | INFO     | __main__:train_model:70 - the classes are {'B_H': 0, 'B_S': 1, 'Empty': 2, 'R_H': 3, 'R_S': 4}
+2022-12-17 20:14:00.681 | INFO     | __main__:train_model:93 - model summary:
+2022-12-17 20:14:00.682 | INFO     | __main__:train_model:94 - None
+2022-12-17 20:14:00.682 | INFO     | __main__:train_model:96 - compiling model
+2022-12-17 20:14:00.688 | INFO     | __main__:train_model:100 - training model
+2022-12-17 20:14:45.184 | INFO     | __main__:train_model:105 - last training loss: 0.1457008421421051
+2022-12-17 20:14:45.184 | INFO     | __main__:train_model:106 - last training accuracy: 0.9666666388511658
+2022-12-17 20:14:45.185 | INFO     | __main__:train_model:107 - last validation loss: 0.11159779131412506
+2022-12-17 20:14:45.185 | INFO     | __main__:train_model:108 - last validation accuracy: 0.9777777791023254
+2022-12-17 20:14:45.185 | INFO     | __main__:train_model:111 - saving model
+2022-12-17 20:14:45.225 | INFO     | __main__:train_model:114 - saving training graph

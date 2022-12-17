@@ -140,7 +140,8 @@ def second_page():
     # print(grid_x, grid_y, largest_box)
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
     board = detect_labels_fast(img_corrected, grid_x, grid_y,
-                               model="../models/cnn_dataset_1.h5")
+                               #model="../models/cnn_dataset_1.h5")
+                               model="../models/cnn_dataset_evento_2000.h5")
 
     wrong_moods = board.find_wrong_position()
     if show_labels:
