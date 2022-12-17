@@ -13,6 +13,7 @@ from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
 from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
     overlap_bool_matrix_to_picture
 
+VERSION = "0.1.0"
 
 @st.cache
 def read_loaded_img(uploaded_file):
@@ -279,9 +280,12 @@ def starting_page():
                 st.image(img2, caption='Largest box.', use_column_width=True)
 
     else:
-        st.markdown("""
+        st.markdown(f"""
         # Welcome to Schelling Board Augmented Reality 🙂  
-        👈  Please upload a picture of the board.""")
+        👈  Please upload a picture of the board.
+        
+        
+        v{VERSION}""")
 
 
 if ("submitted" not in st.session_state) or \
