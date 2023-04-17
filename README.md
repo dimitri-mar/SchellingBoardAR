@@ -2,7 +2,7 @@
 
 # Train preparation
 
-To train the model we need to first create a dataset.
+To train the model we need to first create a dataset.lknlkn
 
 ## Cell division
 We can take a picture of the table and  divide  the grid
@@ -33,4 +33,16 @@ Then we need to split the picture in train and test set. We can do this by runni
 ```splitfolders --output class_data_split --ratio .7 .2 .1 --seed 1234 -- class_data```
 
 from the library https://github.com/jfilter/split-folders
+
+
+# Contribute
+
+## Install
+
+```bash 
+git clone git@github.com:dimitri-mar/SchellingBoardAR.git
+cd SchellingBoardAR
+pip install -r requirements.txt
+``` 
+
 
