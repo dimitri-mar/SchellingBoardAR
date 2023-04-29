@@ -1,6 +1,22 @@
 # Schelling Segregation Model Table Game Parser
 
-# Train preparation
+## Launch app
+
+You can launch the app using docker. 
+
+```bash
+docker build -t schellingar_st_1_20_0 . 
+docker run -d --restart unless-stopped -p 8501:8501 \ 
+        -v ./data:/app/DataApp/data --name schellingar \
+        schellingar 
+```
+where the `data` folder helps to keep the data persistent on the disk. 
+
+You can then access the app at http://localhost:8501
+
+
+
+## Train preparation
 
 To train the model we need to first create a dataset.lknlkn
 
@@ -16,7 +32,7 @@ python Img2Game.py -i data/IMG_20221109_155318_499.jpg  -o IMG_20221109_155318_4
 where `data/IMG_20221109_155318_499.jpg` is the path to the image and `21x25` is the grid size.
 the output directory will be `IMG_20221109_155318_499_jpg`
 
-## Labelling
+### Labelling
 Then we can label  each cell in the output directory in 
 5 different classes 
  - Team 1 - happy
@@ -27,7 +43,7 @@ Then we can label  each cell in the output directory in
 
 A simple tecnique for fast labeling is to move each cell in a directory with the name of the class.
 
-## Train/test split
+### Train/test split
 Then we need to split the picture in train and test set. We can do this by running
 
 ```splitfolders --output class_data_split --ratio .7 .2 .1 --seed 1234 -- class_data```
@@ -35,9 +51,9 @@ Then we need to split the picture in train and test set. We can do this by runni
 from the library https://github.com/jfilter/split-folders
 
 
-# Contribute
+## Contribute
 
-## Install
+### Install
 
 ```bash 
 git clone git@github.com:dimitri-mar/SchellingBoardAR.git
