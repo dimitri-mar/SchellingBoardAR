@@ -23,8 +23,6 @@ from PIL import Image
 
 
 
-
-
 def file_selection():
     import streamlit as st
 
@@ -41,7 +39,7 @@ def file_selection():
     st.markdown(hide_st_style, unsafe_allow_html=True)
 
     st.markdown("# Teams activities")
-    data_path = "/home/dimitri/UB/SchellingAR_event/data_processed"
+    data_path = "data_processed"
 
 
     file_data_list =  glob(os.path.join(data_path, "*","*.pkl"))
