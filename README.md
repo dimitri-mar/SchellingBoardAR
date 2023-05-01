@@ -1,4 +1,8 @@
-# Schelling Segregation Model Table Game Parser
+# The Schelling Board Augmented Reality
+
+This app helps to play Schelling Segregation Model Table Game by using Augmented Reality.
+It helps to play the game by using a phone or a tablet to check the happy and unhappy agents. 
+
 
 ## Launch app
 
@@ -62,3 +66,9 @@ pip install -r requirements.txt
 ``` 
 
 
+## License
+
+You can redistribute "The Schelling Board Augmented Reality" and/or modify
+ it under the terms of the [GNU Affero General Public](LICENSE) License as published
+ by the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
