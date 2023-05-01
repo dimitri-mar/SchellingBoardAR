@@ -12,7 +12,7 @@ You can launch the app using docker.
 docker build -t schellingar_st_1_20_0 . 
 docker run -d --restart unless-stopped -p 8501:8501 \ 
         -v ./data:/app/DataApp/data --name schellingar \
-        schellingar 
+        schellingar_st_1_20_0 
 ```
 where the `data` folder helps to keep the data persistent on the disk. 
 
