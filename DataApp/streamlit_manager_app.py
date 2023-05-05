@@ -5,10 +5,11 @@ import streamlit as st
 import gettext
 
 _ = gettext.gettext
-language = st.sidebar.selectbox('', ['en', 'cat', 'es'])
+st.session_state.language = st.sidebar.selectbox('', ['en', 'cat', 'es'])
 
 try:
-  localizator = gettext.translation('base', localedir='locales', languages=[language])
+  localizator = gettext.translation('base', localedir='locales', languages=[st.session_state.language])
+#  st.text(localizator)
   localizator.install()
   _ = localizator.gettext 
 except:
