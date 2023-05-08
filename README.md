@@ -73,4 +73,4 @@ You can redistribute "The Schelling Board Augmented Reality" and/or modify
  by the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
  
-All emojis designed by [OpenMoji](https://openmoji.org/) – the open-source emoji and icon project. License: CC BY-SA 4.0
+All emojis designed by [OpenMoji](https://openmoji.org/) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/#)
