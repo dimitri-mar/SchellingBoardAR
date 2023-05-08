@@ -1,5 +1,0 @@
-cd C:\Users\usuario\Documents\GitHub\SchellingBoardAR\DataApp
-streamlit run streamlit.manager.app.py
-python "C:\Users\usuario\anaconda3\Tools\i18n\pygettext.py" -d base -o locales\base.pot streamlit_manager_app.py
-localazy upload localazy.json
-"C:\Program Files\Git\usr\bin\msgfmt.exe" -o locales\es\LC_MESSAGES\base.mo locales\es\LC_MESSAGES\base.pot
