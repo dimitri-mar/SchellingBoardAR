@@ -1,0 +1,93 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Localazy (https://localazy.com)\n"
+"Project-Id-Version: Schelling_AR\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
+
+#: streamlit_manager_app.py:48 streamlit_manager_app.py:84
+msgid "Board "
+msgstr "Board "
+
+#: streamlit_manager_app.py:74 streamlit_manager_app.py:97
+msgid "Cancel"
+msgstr "Cancel"
+
+#: streamlit_manager_app.py:63
+msgid "Choose type for game n� "
+msgstr "Choose type for game n� "
+
+#: streamlit_manager_app.py:69
+msgid "Choose type for the game"
+msgstr "Choose type for the game"
+
+#: streamlit_manager_app.py:75 streamlit_manager_app.py:98
+msgid "Confirm"
+msgstr "Confirm"
+
+#: streamlit_manager_app.py:39
+msgid "Data entry"
+msgstr "Data entry"
+
+#: streamlit_manager_app.py:52
+msgid "Dou you want advanced time settings?"
+msgstr "Dou you want advanced time settings?"
+
+#: streamlit_manager_app.py:91
+msgid "Finish last game and proceed to results"
+msgstr "Finish last game and proceed to results"
+
+#: streamlit_manager_app.py:93
+msgid "Finish this game and start next one"
+msgstr "Finish this game and start next one"
+
+#: streamlit_manager_app.py:79
+msgid "Game "
+msgstr "Game "
+
+#: streamlit_manager_app.py:101
+msgid "Results"
+msgstr "Results"
+
+#: streamlit_manager_app.py:38 streamlit_manager_app.py:78
+msgid "Schelling Board Game: Manager App"
+msgstr "Schelling Board Game: Manager App"
+
+#: streamlit_manager_app.py:55
+msgid "Select the length of all games in minutes"
+msgstr "Select the length of all games in minutes"
+
+#: streamlit_manager_app.py:66
+msgid "Select the length of game n�"
+msgstr "Select the length of game n�"
+
+#: streamlit_manager_app.py:41
+msgid "Select the number of boards"
+msgstr "Select the number of boards"
+
+#: streamlit_manager_app.py:43
+msgid "Select the number of games"
+msgstr "Select the number of games"
+
+#: streamlit_manager_app.py:85
+msgid "State"
+msgstr "State"
+
+#: streamlit_manager_app.py:72
+msgid "Submit configuration"
+msgstr "Submit configuration"
+
+#: streamlit_manager_app.py:86
+msgid " Timer"
+msgstr " Timer"
+
+#: streamlit_manager_app.py:66
+msgid " in minutes"
+msgstr " in minutes"
+
+#: streamlit_manager_app.py:37
+msgid "test"
+msgstr "test"

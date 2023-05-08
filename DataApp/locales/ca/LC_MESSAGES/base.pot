@@ -1,0 +1,89 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Localazy (https://localazy.com)\n"
+"Project-Id-Version: Schelling_AR\n"
+"Language: ca\n"
+"Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
+
+#: streamlit_manager_app.py:47 streamlit_manager_app.py:83
+msgid "Board "
+msgstr "Tauler"
+
+#: streamlit_manager_app.py:73 streamlit_manager_app.py:96
+msgid "Cancel"
+msgstr "Cancel·lar"
+
+#: streamlit_manager_app.py:62
+msgid "Choose type for game n� "
+msgstr "Trieu modalitat de joc per a la partida nº "
+
+#: streamlit_manager_app.py:68
+msgid "Choose type for the game"
+msgstr "Trieu modalitat de joc per la partida"
+
+#: streamlit_manager_app.py:74 streamlit_manager_app.py:97
+msgid "Confirm"
+msgstr "Confirmar"
+
+#: streamlit_manager_app.py:38
+msgid "Data entry"
+msgstr "Entrada de dades"
+
+#: streamlit_manager_app.py:51
+msgid "Dou you want advanced time settings?"
+msgstr "Voleu configuració de durada avançada?"
+
+#: streamlit_manager_app.py:90
+msgid "Finish last game and proceed to results"
+msgstr "Acaba la última partida i procedeix a resultats"
+
+#: streamlit_manager_app.py:92
+msgid "Finish this game and start next one"
+msgstr "Acaba la partida actual i comença la següent"
+
+#: streamlit_manager_app.py:78
+msgid "Game "
+msgstr "Partida "
+
+#: streamlit_manager_app.py:100
+msgid "Results"
+msgstr "Resultats"
+
+#: streamlit_manager_app.py:37 streamlit_manager_app.py:77
+msgid "Schelling Board Game: Manager App"
+msgstr "Joc de Taula de Schelling: App de Coordinació"
+
+#: streamlit_manager_app.py:54
+msgid "Select the length of all games in minutes"
+msgstr "Seleccioneu durada per a totes les partides en minuts"
+
+#: streamlit_manager_app.py:65
+msgid "Select the length of game n�"
+msgstr "Seleccioneu la durada de la partida nº"
+
+#: streamlit_manager_app.py:40
+msgid "Select the number of boards"
+msgstr "Seleccioneu el nombre de taulers"
+
+#: streamlit_manager_app.py:42
+msgid "Select the number of games"
+msgstr "Seleccioneu el nombre de partides"
+
+#: streamlit_manager_app.py:84
+msgid "State"
+msgstr "Estat"
+
+#: streamlit_manager_app.py:71
+msgid "Submit configuration"
+msgstr "Enviar configuració"
+
+#: streamlit_manager_app.py:85
+msgid " Timer"
+msgstr "Temporitzador"
+
+#: streamlit_manager_app.py:65
+msgid " in minutes"
+msgstr " en minuts"
