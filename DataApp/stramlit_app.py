@@ -31,7 +31,7 @@ from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
 from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
     overlap_bool_matrix_to_picture
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 @st.cache
 def read_loaded_img(uploaded_file, save_img=True):
@@ -158,7 +158,8 @@ def second_page():
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
     board = detect_labels_fast(img_corrected, grid_x, grid_y,
                                #model="../models/cnn_dataset_1.h5")
-                               model="../models/cnn_dataset_evento_2000.h5")
+                               #model="../models/cnn_dataset_evento_2000.h5")
+                               model="../models/cnn_dataset_230509_plastica_luce.h5")
 
     wrong_moods = board.find_wrong_position()
     if show_labels:
@@ -333,7 +334,7 @@ def starting_page():
     else:
         st.markdown(f"""
         # Welcome to Schelling Board Augmented Reality 🙂  
-        👈  Please upload a picture of the board.
+        Please upload a picture of the board.
         
         
         v{VERSION}""")
