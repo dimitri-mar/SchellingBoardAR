@@ -24,16 +24,32 @@ import numpy as np
 import streamlit as st
 from loguru import logger
 import datetime, hashlib
+import gettext
 
 from VisualDetector.ImageLabelPrediction import detect_labels_fast
 from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
     find_largest_box, correct_perspective
 from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
     overlap_bool_matrix_to_picture
+    
+st.set_page_config(layout="wide",
+                   page_title="The Schelling Board Augmented Reality :)", )
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
-@st.cache
+
+_ = gettext.gettext
+
+st.session_state.language = st.sidebar.selectbox('', ['en', 'ca', 'es'])
+
+try:
+    localizator = gettext.translation('base', localedir='locales', languages=[st.session_state.language])
+    localizator.install()
+    _ = localizator.gettext 
+except:
+    pass
+
+@st.cache_data #@st.cache deprecated
 def read_loaded_img(uploaded_file, save_img=True):
     # upload time
     ct = datetime.datetime.now()
@@ -130,8 +146,6 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y,
 
 def second_page():
     import streamlit as st
-    st.set_page_config(layout="wide",
-                       page_title="The Schelling Board Augmented Reality :)", )
 
     hide_st_style = """
                     <style>
@@ -142,7 +156,7 @@ def second_page():
                     """
     st.markdown(hide_st_style, unsafe_allow_html=True)
     with st.sidebar:
-        show_labels = st.checkbox("Show labels", value=False)
+        show_labels = st.checkbox(_("Show labels"), value=False)
 
 
 
@@ -165,31 +179,34 @@ def second_page():
     if show_labels:
         cols2 = st.columns(2, )
         with cols2[1]:
-            st.markdown("The board is labelled with the following labels: \n"
+            st.markdown(_("The board is labelled with the following labels: \n"
                         "`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, "
                         "`R_S`: Red Sad, "
-                        "`Emp`: Empty")
+                        "`Emp`: Empty"))
 
             annotated_img = \
                 overlap_matrix_to_picture(img_corrected, board.to_str_matrix())
-            st.image(annotated_img, caption='Labelled Image.')
+            st.image(annotated_img, caption=_('Labelled Image.'))
         with cols2[0]:
-            st.write(f"Number of wrong moods: {np.sum(wrong_moods)}")
+            st.write(f"{_('Number of wrong moods')}: {np.sum(wrong_moods)}")
 
             wrong_image = \
                 overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
-            st.image(wrong_image, caption='Wrong moods.')
+            st.image(wrong_image, caption=_('Wrong moods.'))
+            
     else:
-        st.markdown(f"Number of wrong moods: {np.sum(wrong_moods)}\n"
-                    f"please flip the coin marked with an `X` to the correct ")
+        #st.markdown(f"Number of wrong moods: {np.sum(wrong_moods)}\n"
+                    #f"please flip the coin marked with an `X` to the correct ")
+        st.markdown(f""+_('Number of wrong moods')+f": {np.sum(wrong_moods)}\n")
+        st.markdown(_('please flip the coin marked with an `X` to reach a correct state'))
 
         wrong_image = \
             overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
-        st.image(wrong_image, caption='Wrong moods.')
+        st.image(wrong_image, caption=_('Wrong moods.'))
 
     with st.sidebar:
-        prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
-        new_image = st.button("new picture", key="new_picture")
+        prepare_dataset = st.button(_("Prepare Dataset"), key="prepare_dataset")
+        new_image = st.button(_("new picture"), key="new_picture")
 
         if prepare_dataset:
             save_img_as_dataset(img, img_corrected,
@@ -203,9 +220,6 @@ def second_page():
 def starting_page():
     import streamlit as st
 
-    st.set_page_config(layout="wide",
-                       page_title="The Schelling Board Augmented Reality :)", )
-
     hide_st_style = """
                 <style>
                 #MainMenu {visibility: hidden;}
@@ -216,9 +230,10 @@ def starting_page():
     st.markdown(hide_st_style, unsafe_allow_html=True)
 
     with st.sidebar:
-        uploaded_file = st.file_uploader("Choose a file")
+        uploaded_file = st.file_uploader(_("Choose a file"))
         sb_content = st.empty()
         sb_container = sb_content.container()
+
 
     empty_main = st.empty()
     main_container = empty_main.container()
@@ -228,39 +243,39 @@ def starting_page():
 
     # load the uploaded image into opencv
     if uploaded_file is not None:
-
+        
         with st.sidebar:
             show_threshold_img = sb_container.checkbox('Threshold_img',
                                                        value=False)
-            with sb_container.expander("adjust preprocessing parameters"):
-                blurry_kernel_size = st.number_input('reduce the noise',
+            with sb_container.expander(_("adjust preprocessing parameters")):
+                blurry_kernel_size = st.number_input(_('reduce the noise'),
                                                      min_value=0,
                                                      value=5, step=2)
                 adaptive_threshold_mode = st.selectbox(
                     "threshold method",
                     ("adaptive_mean", "adaptive_gaussian"))
-                dilate_kernel_size = st.number_input('increase thickness',
+                dilate_kernel_size = st.number_input(_('increase thickness'),
                                                      min_value=0,
                                                      value=3)
                 dilate_iterations = st.number_input(
-                    'times you repeate increase thickness',
+                    _('times you repeate increase thickness'),
                     min_value=0,
                     value=1)
             with sb_container.form("grid_selection_form"):
                 checkbox_val = st.radio(
-                    "Select the box that contains only the grid:",
+                    _("Select the box that contains only the grid:"),
                     key="visibility",
-                    options=(["no box matches the grid", ] + color_names),
+                    options=([_("no box matches the grid"), ] + color_names),
                     index=1
                 )
                 # Every form must have a submit button.
-                submitted = st.form_submit_button("Submit")
+                submitted = st.form_submit_button(_("Submit"))
                 if submitted:
 
-                    if checkbox_val == "no box matches the grid":
+                    if checkbox_val == _("no box matches the grid"):
                         # grid_string = "no box matches the grid"
                         st.write(
-                            "Please adjust the parameters or take a new picture")
+                            _("Please adjust the parameters or take a new picture"))
                     else:
                         st.session_state["submitted"] = True
 
@@ -275,23 +290,23 @@ def starting_page():
                         # main_container.empty()
             cols = sb_container.columns(3, )
             with cols[0]:
-                grid_x = sb_container.number_input('x grid',
+                grid_x = sb_container.number_input(_('x grid'),
                                                    min_value=1, max_value=50,
                                                    value=20, step=1,
                                                    key="x_grid",
                                                    help="number of columns in the grid",
                                                    label_visibility="visible")
             with cols[2]:
-                grid_y = sb_container.number_input("y grid",
+                grid_y = sb_container.number_input(_("y grid"),
                                                    min_value=1, max_value=50,
                                                    value=20, step=1,
                                                    key="y_grid",
-                                                   help="number of columns in the grid",
+                                                   help=_("number of columns in the grid"),
                                                    label_visibility="visible")
             st.session_state["grid_x"] = grid_x
             st.session_state["grid_y"] = grid_y
 
-        if not submitted or checkbox_val == "no box matches the grid":
+        if not submitted or checkbox_val == _("no box matches the grid"):
             if show_threshold_img:
                 col1, thr_col, col2 = main_container.columns(3)
             else:
@@ -304,7 +319,7 @@ def starting_page():
             st.session_state["process_name"] = process_name
 
             with col1:
-                st.image(img, caption='Uploaded Image.',
+                st.image(img, caption=_('Uploaded Image.'),
                          use_column_width=True, )
 
             threshold_img = prepare_img_for_boundary(img, False,
@@ -315,7 +330,7 @@ def starting_page():
 
             if show_threshold_img:
                 with thr_col:
-                    st.image(threshold_img, caption='Threshold Image.',
+                    st.image(threshold_img, caption=_('Threshold Image.'),
                              use_column_width=True, )
 
             largest_boxes = find_largest_box(threshold_img,
@@ -329,12 +344,12 @@ def starting_page():
                 cv2.drawContours(img2, [box], 0, box_colors[ix], 15)
 
             with col2:
-                st.image(img2, caption='Largest box.', use_column_width=True)
+                st.image(img2, caption=_('Largest box.'), use_column_width=True)
 
     else:
         st.markdown(f"""
-        # Welcome to Schelling Board Augmented Reality 🙂  
-        Please upload a picture of the board.
+        # """+_('Welcome to Schelling Board Augmented Reality')+f""" 🙂  
+          """+_('Please upload a picture of the board.')+f"""
         
         
         v{VERSION}""")
