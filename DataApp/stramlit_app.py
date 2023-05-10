@@ -37,6 +37,7 @@ st.set_page_config(layout="wide",
 
 VERSION = "0.1.2"
 
+
 _ = gettext.gettext
 
 st.session_state.language = st.sidebar.selectbox('', ['en', 'ca', 'es'])
@@ -171,7 +172,8 @@ def second_page():
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
     board = detect_labels_fast(img_corrected, grid_x, grid_y,
                                #model="../models/cnn_dataset_1.h5")
-                               model="../models/cnn_dataset_evento_2000.h5")
+                               #model="../models/cnn_dataset_evento_2000.h5")
+                               model="../models/cnn_dataset_230509_plastica_luce.h5")
 
     wrong_moods = board.find_wrong_position()
     if show_labels:
@@ -347,7 +349,7 @@ def starting_page():
     else:
         st.markdown(f"""
         # """+_('Welcome to Schelling Board Augmented Reality')+f""" 🙂  
-        👈  """+_('Please upload a picture of the board.')+f"""
+          """+_('Please upload a picture of the board.')+f"""
         
         
         v{VERSION}""")
