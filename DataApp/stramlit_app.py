@@ -31,8 +31,11 @@ from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
     find_largest_box, correct_perspective
 from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
     overlap_bool_matrix_to_picture
+    
+st.set_page_config(layout="wide",
+                   page_title="The Schelling Board Augmented Reality :)", )
 
-VERSION = "0.1.0"
+VERSION = "0.1.2"
 
 _ = gettext.gettext
 
@@ -142,8 +145,6 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y,
 
 def second_page():
     import streamlit as st
-    #st.set_page_config(layout="wide",
-     #                  page_title=_("The Schelling Board Augmented Reality :)"), )
 
     hide_st_style = """
                     <style>
@@ -216,9 +217,6 @@ def second_page():
 
 def starting_page():
     import streamlit as st
-
-    #st.set_page_config(layout="wide",
-     #                  page_title="The Schelling Board Augmented Reality :)", )
 
     hide_st_style = """
                 <style>
