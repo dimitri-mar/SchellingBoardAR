@@ -168,6 +168,7 @@ def starting_page():
                 </style>
                 """
     st.markdown(hide_st_style, unsafe_allow_html=True)
+    markdown_container =st.container()
 
     with st.sidebar:
         st.session_state.language = st.sidebar.selectbox('',
@@ -175,9 +176,9 @@ def starting_page():
                                                          # index=available_languages.index(
                                                          #     default_language))
         _ = set_language(st.session_state.language)
-        uploaded_file = st.file_uploader(_("Choose a file"), key="file_uploader")
-        sb_content = st.empty()
-        sb_container = sb_content.container()
+    uploaded_file = st.file_uploader(_("Choose a file"), key="file_uploader")
+    sb_content = st.empty()
+    sb_container = sb_content.container()
 
 
 
@@ -193,71 +194,72 @@ def starting_page():
         with st.sidebar:
             show_threshold_img = sb_container.checkbox('Threshold_img',
                                                        value=False)
-            with sb_container.expander(_("adjust preprocessing parameters")):
-                blurry_kernel_size = st.number_input(_('reduce the noise'),
+        with sb_container.expander(_("adjust preprocessing parameters")):
+            blurry_kernel_size = st.number_input(_('reduce the noise'),
                                                      min_value=0,
                                                      value=5, step=2)
-                adaptive_threshold_mode = st.selectbox(
+            adaptive_threshold_mode = st.selectbox(
                     "threshold method",
                     ("adaptive_mean", "adaptive_gaussian"))
-                dilate_kernel_size = st.number_input(_('increase thickness'),
+            dilate_kernel_size = st.number_input(_('increase thickness'),
                                                      min_value=0,
                                                      value=3)
-                dilate_iterations = st.number_input(
+            dilate_iterations = st.number_input(
                     _('times you repeate increase thickness'),
                     min_value=0,
                     value=1)
-            with sb_container.form("grid_selection_form"):
-                checkbox_val = st.radio(
+        with sb_container.form("grid_selection_form"):
+            checkbox_val = st.radio(
                     _("Select the box that contains only the grid:"),
                     key="visibility",
                     options=([_("no box matches the grid"), ] + color_names),
                     index=1
                 )
                 # Every form must have a submit button.
-                submitted = st.form_submit_button(_("Submit"))
-                if submitted:
+            submitted = st.form_submit_button(_("Submit"))
+            if submitted:
 
-                    if checkbox_val == _("no box matches the grid"):
+                if checkbox_val == _("no box matches the grid"):
                         # grid_string = "no box matches the grid"
-                        st.write(
+                    st.write(
                             _("Please adjust the parameters or take a new picture"))
-                    else:
-                        st.session_state["submitted"] = True
+                else:
+                    st.session_state["submitted"] = True
 
-                        def find_color_ix(color_name):
-                            return color_names.index(color_name)
+                    def find_color_ix(color_name):
+                        return color_names.index(color_name)
 
-                        st.session_state["largest_box"] = \
+                    st.session_state["largest_box"] = \
                             st.session_state["largest_box"][
                                 find_color_ix(checkbox_val)]
-                        st.experimental_rerun()
+                    st.experimental_rerun()
                         # sb_content.empty()
                         # main_container.empty()
-            cols = sb_container.columns(3, )
-            with cols[0]:
-                grid_x = sb_container.number_input(_('x grid'),
+        cols = sb_container.columns(3, )
+        with cols[0]:
+            grid_x = sb_container.number_input(_('x grid'),
                                                    min_value=1, max_value=50,
                                                    value=20, step=1,
                                                    key="x_grid",
                                                    help="number of columns in the grid",
                                                    label_visibility="visible")
-            with cols[2]:
-                grid_y = sb_container.number_input(_("y grid"),
+        with cols[2]:
+            grid_y = sb_container.number_input(_("y grid"),
                                                    min_value=1, max_value=50,
                                                    value=20, step=1,
                                                    key="y_grid",
                                                    help=_(
                                                        "number of columns in the grid"),
                                                    label_visibility="visible")
-            st.session_state["grid_x"] = grid_x
-            st.session_state["grid_y"] = grid_y
+        st.session_state["grid_x"] = grid_x
+        st.session_state["grid_y"] = grid_y
 
         if not submitted or checkbox_val == _("no box matches the grid"):
             if show_threshold_img:
-                col1, thr_col, col2 = main_container.columns(3)
-            else:
-                col1, col2 = main_container.columns(2)
+                #col1, thr_col, col2 = main_container.columns(3)
+                col1, thr_col = main_container.columns(2)
+            #else:
+                #col1, col2 = main_container.columns(2)
 
             process_name, img = read_loaded_img(uploaded_file)
 
@@ -265,9 +267,9 @@ def starting_page():
             st.session_state["img_file_name"] = uploaded_file.name
             st.session_state["process_name"] = process_name
 
-            with col1:
-                st.image(img, caption=_('Uploaded Image.'),
-                         use_column_width=True, )
+            #with col1:
+                #st.image(img, caption=_('Uploaded Image.'),
+                         #use_column_width=True, )
 
             threshold_img = prepare_img_for_boundary(img, False,
                                                      blurry_kernel_size,
@@ -290,14 +292,17 @@ def starting_page():
                 # print(ix, box)
                 cv2.drawContours(img2, [box], 0, box_colors[ix], 15)
 
-            with col2:
-                st.image(img2, caption=_('Largest box.'),
-                         use_column_width=True)
+            #with col2:
+                #st.image(img2, caption=_('Largest box.'),
+                 #        use_column_width=True)
+            st.image(img2, caption=_('Largest box.'),
+                     use_column_width=True)    
 
     else:
-        st.markdown(f"""
-        # """ + _('Welcome to Schelling Board Augmented Reality') + f""" 🙂  
-          """ + _('Please upload a picture of the board.') + f"""
+        with markdown_container:
+            st.markdown(f"""
+            # """ + _('Welcome to Schelling Board Augmented Reality') + f""" 🙂  
+              """ + _('Please upload a picture of the board.') + f"""
 
 
         v{VERSION}""")
