@@ -25,6 +25,11 @@ import streamlit as st
 from loguru import logger
 import datetime, hashlib
 import gettext
+import uuid
+
+from typing import Callable, Tuple
+import  numpy.typing as npt
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from VisualDetector.ImageLabelPrediction import detect_labels_fast
 from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
@@ -38,20 +43,33 @@ st.set_page_config(layout="wide",
 
 VERSION = "0.1.3"
 
+# set a user session state
+if 'user_uid' not in st.session_state:
+    st.session_state.user_uid= str(uuid.uuid4())
+
 
 available_languages = ['en', 'ca', 'es']
 default_language = 'ca'
 
 
-def set_language(lang):
+def set_language(lang: str) -> Callable[[str], str]:
+    """Set the language of the app.
+
+    Args:
+        lang (str): the language to set.
+
+    Returns:
+        Callable[[str], str]: a function that translates a string to the
+        selected language. In particular gettex propery configured.
+    """
     try:
         logger.info(
             "Loading the language: {}".format(st.session_state.language))
         localizator = gettext.translation('base', localedir='locales',
                                           languages=[
                                               st.session_state.language])
-        localizator.install() #TODO check if this is needed
-        return  localizator.gettext
+        localizator.install()   # TODO: check if this is needed
+        return localizator.gettext
     except Exception as e:
         logger.error("Error loading the language: {}".format(e))
 
@@ -59,22 +77,35 @@ if 'language' not in st.session_state:
     st.session_state.language = default_language
 
 
-@st.cache_data #@st.cache deprecated
-def read_loaded_img(uploaded_file, save_img=True):
+@st.cache_data
+def read_loaded_img(uploaded_file: UploadedFile,
+                    save_img:bool = True,
+                    user_id:str = "") -> Tuple[str, npt.ArrayLike]:
+    """Read the uploaded image and save it in the data folder.
+
+    Args:
+        uploaded_file (st.UploadedFile): the uploaded file.
+        save_img (bool, optional): whether to save the image or not. Defaults to True.
+        user_id (str, optional): the user id. Defaults to "".
+
+    Returns:
+        Tuple[str, npt.ArrayLike]: the process name and the image as a numpy array.
+    """
+
     # upload time
     ct = datetime.datetime.now()
     timestamp = ct.timestamp()
 
     up_file = uploaded_file.read()
-    #compute the hash of the uploaded file
+
+    # compute the hash of the uploaded file
     file_hash = hashlib.md5(up_file).hexdigest()
     img_file_name_base = os.path.splitext(uploaded_file.name)[0]
 
-    process_name = "app_" + file_hash + "_" + str(timestamp)
+    process_name = f"app_{user_id}_{str(timestamp)}_{file_hash}"
     folder_name = "data/" + process_name
 
-    #imageBGR = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8),
-    #                        cv2.IMREAD_COLOR)
+    # read the image
     imageBGR = cv2.imdecode(np.frombuffer(up_file, np.uint8),
                             cv2.IMREAD_COLOR)
     imageRGB = cv2.cvtColor(imageBGR, cv2.COLOR_BGR2RGB)
@@ -87,17 +118,19 @@ def read_loaded_img(uploaded_file, save_img=True):
         with open(os.path.join(folder_name, uploaded_file.name), "wb") as f:
             f.write(uploaded_file.getbuffer())
 
-        #let's save the timestamp
+        # let's save the timestamp
         with open(os.path.join(folder_name, "timestamp.txt"), "w") as f:
             f.write(str(timestamp))
 
+    return process_name, imageRGB
 
 
-    return process_name,  imageRGB
-
-
-def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y,
-                        schelling_board=None):
+def save_img_as_dataset(img:npt.ArrayLike,
+                        img_corrected:npt.ArrayLike,
+                        img_file_name:str,
+                        grid_x:int, grid_y:int,
+                        schelling_board:bool = None,
+                        process_name:str = "") -> None:
     # TODO add uniqe id to the file name for future refererence
     output_dir = "data"
     # create a directory in output_dir if it does not exist
@@ -105,7 +138,7 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y,
         os.makedirs(output_dir)  # create directory
     # remove extension from file name
     img_file_name_base = os.path.splitext(img_file_name)[0]
-    process_name = "app_" + img_file_name_base
+    process_name = "dataset_" + process_name
 
     # setup the logger
     logger.add(f"{output_dir}/{process_name}.log", rotation="10 MB")
@@ -270,7 +303,8 @@ def starting_page():
             else:
                 col1, = imgs_container.columns(1)
 
-            process_name, img = read_loaded_img(uploaded_file)
+            process_name, img = read_loaded_img(uploaded_file,
+                                                user_id=st.session_state.user_uid)
 
             st.session_state["img"] = img
             st.session_state["img_file_name"] = uploaded_file.name
@@ -388,12 +422,11 @@ def second_page():
         if prepare_dataset:
             save_img_as_dataset(img, img_corrected,
                                 st.session_state["img_file_name"],
-                                grid_x, grid_y, board,)
+                                grid_x, grid_y, board,
+                                st.session_state["process_name"])
         if new_image:
             st.session_state["submitted"] = False
             st.experimental_rerun()
-
-
 
 
 if ("submitted" not in st.session_state) or \
