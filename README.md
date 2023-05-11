@@ -57,19 +57,22 @@ from the library https://github.com/jfilter/split-folders
 ## Translation
 Translations for bot stramlit_app.py and streamlit_manager_app.py are based on gittext and hosted at Localazy.
 In case new texts in need of translation are added the following steps must be taken:
+
 -Create a .pot file with all strings for translation:
 
-Windows:	python "path\pygettext.py" -d base -o DataApp\locales\base.pot DataApp\streamlit_manager_app.py DataApp\stramlit_app.py
-Unix:		path/pygettext.py -d base -o DataApp/locales/base.pot DataApp/streamlit_manager_app.py DataApp/stramlit_app.py
+Windows:	```python "path\pygettext.py" -d base -o DataApp\locales\base.pot DataApp\streamlit_manager_app.py DataApp\stramlit_app.py```
+Unix:		```path/pygettext.py -d base -o DataApp/locales/base.pot DataApp/streamlit_manager_app.py DataApp/stramlit_app.py```
 
 localazy upload localazy.json
--Upload to localazy project Schelling_AR
--Acces the project page at localazy site. Go to Translations>Languages and add missing translations
--Go to Tools > File management and download base.po file marking "Download all available languages"
--Move all pot files to its corresponding directory locales/$language$/LC_MESSAGES
--Create the corresponding .mo file for each language at the same directory
--"path\msgfmt.exe"-o DataApp\locales\$language$\LC_MESSAGES\base.mo DataApp\locales\$language$\LC_MESSAGES\base.pot
-msgfmt -o DataApp/locales/$language/LC_MESSAGES/base.mo DataApp/locales/$language/LC_MESSAGES/base.po
+ - Upload to localazy project Schelling_AR
+ - Acces the project page at localazy site. Go to Translations>Languages and add missing translations
+ - Go to Tools > File management and download base.po file marking "Download all available languages"
+ - Move all pot files to its corresponding directory locales/$language$/LC_MESSAGES
+ - Create the corresponding .mo file for each language at the same directory
+
+Windows:	```"path\msgfmt.exe"-o DataApp\locales\$language$\LC_MESSAGES\base.mo DataApp\locales\$language$\LC_MESSAGES\base.pot```
+
+Unix:		```msgfmt -o DataApp/locales/$language/LC_MESSAGES/base.mo DataApp/locales/$language/LC_MESSAGES/base.po```
 
 
 ## Contribute
