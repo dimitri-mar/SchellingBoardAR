@@ -419,6 +419,20 @@ def second_page():
         prepare_dataset = st.button(_("Prepare Dataset"), key="prepare_dataset")
         new_image = st.button(_("new picture"), key="new_picture")
 
+        #some empty space
+        st.markdown("------")
+        st.markdown("#")
+
+        st.markdown(
+            "\n\n\n" +_(f'I counted  {board.count_agents_teams()} agents in the board'))
+
+        happyness_string ="\n\n\n" + _(f'The happyness is:')+"\n"
+        for t,v in board.happyness().items():
+            happyness_string += _(f'\n   {t}: {v:.1%}\n')
+
+        st.markdown(happyness_string)
+
+
         if prepare_dataset:
             save_img_as_dataset(img, img_corrected,
                                 st.session_state["img_file_name"],

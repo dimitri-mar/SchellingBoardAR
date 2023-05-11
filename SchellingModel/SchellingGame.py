@@ -18,17 +18,34 @@
 import numpy as np
 from scipy.ndimage import convolve
 
-from typing import Union
+from typing import Union, List, Dict
+import numpy.typing as npt
 
 
 class SchellingBoard:
-    def __init__(self, teams=None,
-                 moods=None,
-                 team_names=["B", "R"],
-                 separator="_",
-                 mood_map={"H": 1, "S": -1},
-                 empty_value=0,
-                 ):
+    def __init__(self,
+                 teams:npt.ArrayLike=None,
+                 moods:npt.ArrayLike=None,
+                 team_names:List=["B", "R"],
+                 separator:str="_",
+                 mood_map:Dict={"H": 1, "S": -1},
+                 empty_value:int=0,
+                 ) -> None:
+        """ Manages the status of the board of the Schelling game
+
+        The board is encoded in a matrix of strings representing the teams and the moods.
+        Ore two matrices, one for the teams and one for the moods.
+        It is important to notice that moods can be wrong, while the position of the teams is always correct.
+
+        Args:
+            teams (npt.ArrayLike): a 2D array of teams
+            moods (npt.ArrayLike): a 2D array of moods
+            team_names (List, optional): A list representing the team names. Defaults to ["B", "R"].
+            separator (str, optional): separtor betwen team and mood in the matrix. Defaults to "_".
+            mood_map (Dict, optional): The mapping between the status of each agent and an integer value. Defaults to {"H": 1, "S": -1}.
+            empty_value (int, optional): the integer representing . Defaults to 0.
+        """
+
 
         #if (np.unique(teams).size - 1) <= len(team_names):
         #    raise ValueError("teams should contain only the team names")
@@ -58,7 +75,24 @@ class SchellingBoard:
     def grid_y(self):
         return self.teams.shape[0]
 
-    def get_status_cell_str(self, x, y, separator="_"):
+    def count_team_agents(self, team: Union[int, str]) -> int:
+        """Return the number of agents of a given team"""
+        team = self.parse_team(team)
+        return np.count_nonzero(self.teams == team)
+
+    def cont_empty_cells(self) -> int:
+        return np.count_nonzero(self.teams == self.empty_value)
+
+    def count_agents_teams(self) -> Dict:
+        """Return the number of agents of each team"""
+        count =  {team: self.count_team_agents(team) for team in self.team_names}
+        count["Empty"] = self.cont_empty_cells()
+        return count
+
+    def get_status_cell_str(self,
+                            x:int, y:int, separator="_"):
+        """Return a string representation of the status of a cell"""
+
         team = self.teams[y, x]
         mood = self.moods[y, x]
 
@@ -67,7 +101,7 @@ class SchellingBoard:
         else:
             return f"{self.get_team_str(team)}{separator}{self.get_team_mood(mood)}"
 
-        return "sad"
+
 
     def get_all_classes_str(self, separator="_"):
         classes = []
@@ -129,13 +163,14 @@ class SchellingBoard:
     def empty_positions(self):
         return (self.teams == self.empty_value)
 
-    def mood_positions(self, mood: Union[int, str]):
+    def mood_positions(self, mood: Union[int, str]) ->np.ndarray[np.bool_]:
+
         mood = self.parse_mood(mood)
 
         return (self.moods == mood)
 
 
-    def same_team_neighbours(self, team: Union[int, str], use_cache=True):
+    def same_team_neighbours(self, team: Union[int, str], use_cache=True) ->np.ndarray[np.int_]:
         team = self.parse_team(team)
 
         if use_cache and team in self.same_team_neighbours_cache:
@@ -149,7 +184,8 @@ class SchellingBoard:
 
         return convolve(position, kernel, mode="constant")
 
-    def model_happy_cells(self, team: Union[int, str]):
+    def model_happy_cells(self, team: Union[int, str]) ->np.ndarray[np.bool_]:
+        """Return a boolean array representing the cells of the team that are happy according to the model"""
         # TODO implement multiple teams and different thresholds
 
         other_teams = [t for t in self.team_names if t != team]
@@ -183,6 +219,24 @@ class SchellingBoard:
         return wrong_mood
 
 
+    def happyness(self, details=False):
+        """Return the percentage of happy cells based on the modellized happiness"""
+
+        happiness = {}
+        for team in self.team_names:
+            team_positions = self.team_positions(team)
+
+
+            happy_cells = self.model_happy_cells(team)
+            sad_cells = ~happy_cells
+
+            # if the cell is of the team and is happy, it should be happy
+            pct_happy = np.sum(team_positions & happy_cells) / np.sum(team_positions)
+            happiness[team] = pct_happy
+
+        happiness["total"]= np.sum(list(happiness.values())) / len(happiness)
+
+        return happiness
 
 
 
