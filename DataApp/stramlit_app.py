@@ -360,10 +360,11 @@ def second_page():
                     """
     st.markdown(hide_st_style, unsafe_allow_html=True)
     with st.sidebar:
-        st.session_state.language = st.sidebar.selectbox('',
-                                                         available_languages)#,
-                                                         # index=available_languages.index(
-                                                         #     default_language))
+        st.session_state.language = st.sidebar.selectbox('select your language',
+                                                         available_languages,
+                                                         index=available_languages.index(
+                                                              default_language),
+                                                         label_visibility="hidden")
         _ = set_language(st.session_state.language)
         show_labels = st.checkbox(_("Show labels"), value=False)
         st.markdown( f"""` app version v{VERSION} `""")
@@ -414,10 +415,15 @@ def second_page():
         wrong_image = \
             overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
         st.image(wrong_image, caption=_('Wrong moods.'))
+        
+    col3 = st.columns([1,1,1])    
+    new_image = col3[1].button(_("new picture"), key="new_picture", use_container_width=True)
+    if new_image:
+        st.session_state["submitted"] = False
+        st.experimental_rerun()
 
     with st.sidebar:
         prepare_dataset = st.button(_("Prepare Dataset"), key="prepare_dataset")
-        new_image = st.button(_("new picture"), key="new_picture")
 
         #some empty space
         st.markdown("------")
@@ -438,11 +444,7 @@ def second_page():
                                 st.session_state["img_file_name"],
                                 grid_x, grid_y, board,
                                 st.session_state["process_name"])
-        if new_image:
-            st.session_state["submitted"] = False
-            st.experimental_rerun()
-
-
+            
 if ("submitted" not in st.session_state) or \
         (not st.session_state["submitted"]):
     starting_page()
