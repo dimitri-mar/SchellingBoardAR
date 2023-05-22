@@ -1,100 +1,140 @@
 msgid ""
 msgstr ""
+"Project-Id-Version: Schelling_AR\n"
+"POT-Creation-Date: 2023-05-22 14:00+0200\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Localazy (https://localazy.com)\n"
-"Project-Id-Version: Schelling_AR\n"
-"Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
 
-#: streamlit_manager_app.py:61 streamlit_manager_app.py:97
-msgid "Board "
-msgstr "Board "
-
-#: streamlit_manager_app.py:87 streamlit_manager_app.py:110
-msgid "Cancel"
-msgstr "Cancel"
-
-#: stramlit_app.py:233
+#: stramlit_app.py:220
 msgid "Choose a file"
 msgstr "Choose a file"
 
-#: streamlit_manager_app.py:76
-msgid "Choose type for game n� "
-msgstr "Choose type for game n� "
+#: stramlit_app.py:236
+msgid "adjust preprocessing parameters"
+msgstr "adjust preprocessing parameters"
 
-#: streamlit_manager_app.py:82
-msgid "Choose type for the game"
-msgstr "Choose type for the game"
+#: stramlit_app.py:237
+msgid "reduce the noise"
+msgstr "reduce the noise"
 
-#: streamlit_manager_app.py:88 streamlit_manager_app.py:111
-msgid "Confirm"
-msgstr "Confirm"
+#: stramlit_app.py:243
+msgid "increase thickness"
+msgstr "increase thickness"
 
-#: streamlit_manager_app.py:52
-msgid "Data entry"
-msgstr "Data entry"
+#: stramlit_app.py:247
+msgid "times you repeate increase thickness"
+msgstr "times you repeate increase thickness"
 
-#: streamlit_manager_app.py:65
-msgid "Dou you want advanced time settings?"
-msgstr "Dou you want advanced time settings?"
+#: stramlit_app.py:253
+msgid "x grid"
+msgstr "x grid"
 
-#: streamlit_manager_app.py:104
-msgid "Finish last game and proceed to results"
-msgstr "Finish last game and proceed to results"
+#: stramlit_app.py:260
+msgid "y grid"
+msgstr "y grid"
 
-#: streamlit_manager_app.py:106
-msgid "Finish this game and start next one"
-msgstr "Finish this game and start next one"
+#: stramlit_app.py:264
+msgid "number of columns in the grid"
+msgstr "number of columns in the grid"
 
-#: streamlit_manager_app.py:92
-msgid "Game "
-msgstr "Game "
+#: stramlit_app.py:272
+msgid "Select the box that contains only the grid:"
+msgstr "Select the box that contains only the grid:"
 
-#: stramlit_app.py:186
-msgid "Labelled Image."
-msgstr "Labelled Image."
+#: stramlit_app.py:279
+msgid "Submit"
+msgstr "Submit"
 
-#: stramlit_app.py:347
-msgid "Largest box."
-msgstr "Largest box."
+#: stramlit_app.py:282 stramlit_app.py:299
+msgid "no box matches the grid"
+msgstr "no box matches the grid"
 
-#: stramlit_app.py:197
-msgid "Number of wrong moods"
-msgstr "Number of wrong moods"
-
-#: stramlit_app.py:278
+#: stramlit_app.py:285
 msgid "Please adjust the parameters or take a new picture"
 msgstr "Please adjust the parameters or take a new picture"
 
-#: stramlit_app.py:352
+#: stramlit_app.py:325
+msgid "Threshold Image."
+msgstr "Threshold Image."
+
+#: stramlit_app.py:342
+msgid "Largest box."
+msgstr "Largest box."
+
+#: stramlit_app.py:348
+msgid "Welcome to Schelling Board Augmented Reality"
+msgstr "Welcome to Schelling Board Augmented Reality"
+
+#: stramlit_app.py:349
 msgid "Please upload a picture of the board."
 msgstr "Please upload a picture of the board."
 
-#: stramlit_app.py:205
+#: stramlit_app.py:369
+msgid "Show labels"
+msgstr "Show labels"
+
+#: stramlit_app.py:394
+msgid ""
+"The board is labelled with the following labels: \n"
+"`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, `R_S`: Red Sad, `Emp`: "
+"Empty"
+msgstr ""
+"The board is labelled with the following labels: \n"
+"`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, `R_S`: Red Sad, `Emp`: "
+"Empty"
+
+#: stramlit_app.py:401
+msgid "Labelled Image."
+msgstr "Labelled Image."
+
+#: stramlit_app.py:407 stramlit_app.py:417
+msgid "Wrong moods."
+msgstr "Wrong moods."
+
+#: stramlit_app.py:412
+msgid "Number of wrong moods"
+msgstr "Number of wrong moods"
+
+#: stramlit_app.py:413
+msgid "please flip the coin marked with an `X` to reach a correct state"
+msgstr "please flip the coin marked with an `X` to reach a correct state"
+
+#: stramlit_app.py:420
+msgid "new picture"
+msgstr "new picture"
+
+#: stramlit_app.py:426
 msgid "Prepare Dataset"
 msgstr "Prepare Dataset"
 
-#: streamlit_manager_app.py:114
-msgid "Results"
-msgstr "Results"
+#: stramlit_app.py:432
+#, fuzzy
+msgid "I counted {number} agents in the board"
+msgstr "I counted {number} agents in the board"
+
+#: stramlit_app.py:436
+msgid "The happyness is:"
+msgstr "The happyness is:"
+
+#: stramlit_app.py:438
+msgid ""
+"\n"
+"   {t}: {v:.1%}\n"
+msgstr ""
+"\n"
+"   {t}: {v:.1%}\n"
 
 #: streamlit_manager_app.py:51 streamlit_manager_app.py:91
 msgid "Schelling Board Game: Manager App"
 msgstr "Schelling Board Game: Manager App"
 
-#: stramlit_app.py:266
-msgid "Select the box that contains only the grid:"
-msgstr "Select the box that contains only the grid:"
-
-#: streamlit_manager_app.py:68
-msgid "Select the length of all games in minutes"
-msgstr "Select the length of all games in minutes"
-
-#: streamlit_manager_app.py:79
-msgid "Select the length of game n�"
-msgstr "Select the length of game n�"
+#: streamlit_manager_app.py:52
+msgid "Data entry"
+msgstr "Data entry"
 
 #: streamlit_manager_app.py:54
 msgid "Select the number of boards"
@@ -104,102 +144,83 @@ msgstr "Select the number of boards"
 msgid "Select the number of games"
 msgstr "Select the number of games"
 
-#: stramlit_app.py:157
-msgid "Show labels"
-msgstr "Show labels"
+#: streamlit_manager_app.py:61 streamlit_manager_app.py:97
+msgid "Board "
+msgstr "Board "
 
-#: streamlit_manager_app.py:98
-msgid "State"
-msgstr "State"
+#: streamlit_manager_app.py:65
+msgid "Dou you want advanced time settings?"
+msgstr "Dou you want advanced time settings?"
 
-#: stramlit_app.py:272
-msgid "Submit"
-msgstr "Submit"
+#: streamlit_manager_app.py:68
+msgid "Select the length of all games in minutes"
+msgstr "Select the length of all games in minutes"
 
-#: streamlit_manager_app.py:85
-msgid "Submit configuration"
-msgstr "Submit configuration"
-
-#: stramlit_app.py:144 stramlit_app.py:232
-msgid "The Schelling Board Augmented Reality :)"
-msgstr "The Schelling Board Augmented Reality :)"
-
-#: stramlit_app.py:179
-msgid "The board is labelled with the following labels: \n`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, `R_S`: Red Sad, `Emp`: Empty"
-msgstr "The board is labelled with the following labels: \n`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, `R_S`: Red Sad, `Emp`: Empty"
-
-#: stramlit_app.py:333
-msgid "Threshold Image."
-msgstr "Threshold Image."
-
-#: stramlit_app.py:322
-msgid "Uploaded Image."
-msgstr "Uploaded Image."
-
-#: stramlit_app.py:351
-msgid "Welcome to Schelling Board Augmented Reality"
-msgstr "Welcome to Schelling Board Augmented Reality"
-
-#: stramlit_app.py:192 stramlit_app.py:202
-msgid "Wrong moods."
-msgstr "Wrong moods."
-
-#: streamlit_manager_app.py:99
-msgid " Timer"
-msgstr " Timer"
+#: streamlit_manager_app.py:76
+#, fuzzy
+msgid "Choose type for game n "
+msgstr "Choose type for game n� "
 
 #: streamlit_manager_app.py:79
 msgid " in minutes"
 msgstr " in minutes"
 
-#: stramlit_app.py:250
-msgid "adjust preprocessing parameters"
-msgstr "adjust preprocessing parameters"
+#: streamlit_manager_app.py:79
+#, fuzzy
+msgid "Select the length of game n"
+msgstr "Select the length of game n�"
 
-#: stramlit_app.py:239
-msgid "blue"
-msgstr "blue"
+#: streamlit_manager_app.py:82
+msgid "Choose type for the game"
+msgstr "Choose type for the game"
 
-#: stramlit_app.py:239
-msgid "green"
-msgstr "green"
+#: streamlit_manager_app.py:85
+msgid "Submit configuration"
+msgstr "Submit configuration"
 
-#: stramlit_app.py:257
-msgid "increase thickness"
-msgstr "increase thickness"
+#: streamlit_manager_app.py:87 streamlit_manager_app.py:110
+msgid "Cancel"
+msgstr "Cancel"
 
-#: stramlit_app.py:206
-msgid "new picture"
-msgstr "new picture"
+#: streamlit_manager_app.py:88 streamlit_manager_app.py:111
+msgid "Confirm"
+msgstr "Confirm"
 
-#: stramlit_app.py:268 stramlit_app.py:275 stramlit_app.py:309
-msgid "no box matches the grid"
-msgstr "no box matches the grid"
+#: streamlit_manager_app.py:92
+msgid "Game "
+msgstr "Game "
 
-#: stramlit_app.py:304
-msgid "number of columns in the grid"
-msgstr "number of columns in the grid"
+#: streamlit_manager_app.py:98
+msgid "State"
+msgstr "State"
 
-#: stramlit_app.py:198
-msgid "please flip the coin marked with an `X` to reach a correct state"
-msgstr "please flip the coin marked with an `X` to reach a correct state"
+#: streamlit_manager_app.py:99
+msgid " Timer"
+msgstr " Timer"
 
-#: stramlit_app.py:239
-msgid "red"
-msgstr "red"
+#: streamlit_manager_app.py:104
+msgid "Finish last game and proceed to results"
+msgstr "Finish last game and proceed to results"
 
-#: stramlit_app.py:251
-msgid "reduce the noise"
-msgstr "reduce the noise"
+#: streamlit_manager_app.py:106
+msgid "Finish this game and start next one"
+msgstr "Finish this game and start next one"
 
-#: stramlit_app.py:261
-msgid "times you repeate increase thickness"
-msgstr "times you repeate increase thickness"
+#: streamlit_manager_app.py:114
+msgid "Results"
+msgstr "Results"
 
-#: stramlit_app.py:293
-msgid "x grid"
-msgstr "x grid"
+#~ msgid "The Schelling Board Augmented Reality :)"
+#~ msgstr "The Schelling Board Augmented Reality :)"
 
-#: stramlit_app.py:300
-msgid "y grid"
-msgstr "y grid"
+#~ msgid "Uploaded Image."
+#~ msgstr "Uploaded Image."
+
+#~ msgid "blue"
+#~ msgstr "blue"
+
+#~ msgid "green"
+#~ msgstr "green"
+
+#~ msgid "red"
+#~ msgstr "red"

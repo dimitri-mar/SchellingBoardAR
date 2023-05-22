@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Schelling_AR\n"
-"POT-Creation-Date: 2023-05-22 12:59+0200\n"
+"POT-Creation-Date: 2023-05-22 14:00+0200\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -120,6 +120,14 @@ msgstr "He contado {number} agentes en el tablero"
 msgid "The happyness is:"
 msgstr "La felicidad es:"
 
+#: stramlit_app.py:438
+msgid ""
+"\n"
+"   {t}: {v:.1%}\n"
+msgstr ""
+"\n"
+"   {t}: {v:.1%}\n"
+
 #: streamlit_manager_app.py:51 streamlit_manager_app.py:91
 msgid "Schelling Board Game: Manager App"
 msgstr "Juego de Mesa de Schelling: App de Coordinación"
@@ -201,13 +209,6 @@ msgstr "Terminar la partida actual y empezar la siguiente"
 #: streamlit_manager_app.py:114
 msgid "Results"
 msgstr "Resultados"
-
-#~ msgid ""
-#~ "\n"
-#~ "   {t}: {v:.1%}\n"
-#~ msgstr ""
-#~ "\n"
-#~ "   {t}: {v:.1%}\n"
 
 #~ msgid " agents on the board"
 #~ msgstr " agentes en el tablero"
