@@ -1,100 +1,132 @@
 msgid ""
 msgstr ""
+"Project-Id-Version: Schelling_AR\n"
+"POT-Creation-Date: 2023-05-22 12:59+0200\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Localazy (https://localazy.com)\n"
-"Project-Id-Version: Schelling_AR\n"
-"Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
 
-#: streamlit_manager_app.py:61 streamlit_manager_app.py:97
-msgid "Board "
-msgstr "Tablero "
-
-#: streamlit_manager_app.py:87 streamlit_manager_app.py:110
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: stramlit_app.py:233
+#: stramlit_app.py:220
 msgid "Choose a file"
 msgstr "Elegir un archivo"
 
-#: streamlit_manager_app.py:76
-msgid "Choose type for game n� "
-msgstr "Escoge modalidad de juega para la partida nº"
+#: stramlit_app.py:236
+msgid "adjust preprocessing parameters"
+msgstr "ajustar los parámetros de preprocesamiento"
 
-#: streamlit_manager_app.py:82
-msgid "Choose type for the game"
-msgstr "Escoge tipo de partida"
+#: stramlit_app.py:237
+msgid "reduce the noise"
+msgstr "reducir ruido"
 
-#: streamlit_manager_app.py:88 streamlit_manager_app.py:111
-msgid "Confirm"
-msgstr "Confirmar"
+#: stramlit_app.py:243
+msgid "increase thickness"
+msgstr "aumentar grosor"
 
-#: streamlit_manager_app.py:52
-msgid "Data entry"
-msgstr "Entrada de datos"
+#: stramlit_app.py:247
+msgid "times you repeate increase thickness"
+msgstr "veces que se aumenta el grosor"
 
-#: streamlit_manager_app.py:65
-msgid "Dou you want advanced time settings?"
-msgstr "Quiere configuración de duración avanzada?"
+#: stramlit_app.py:253
+msgid "x grid"
+msgstr "cuadrícula x"
 
-#: streamlit_manager_app.py:104
-msgid "Finish last game and proceed to results"
-msgstr "Terminar la última partida y proseguir a resultados"
+#: stramlit_app.py:260
+msgid "y grid"
+msgstr "cuadrícula y"
 
-#: streamlit_manager_app.py:106
-msgid "Finish this game and start next one"
-msgstr "Terminar la partida actual y empezar la siguiente"
+#: stramlit_app.py:264
+msgid "number of columns in the grid"
+msgstr "número de columnas en la cuadrícula"
 
-#: streamlit_manager_app.py:92
-msgid "Game "
-msgstr "Partida "
+#: stramlit_app.py:272
+msgid "Select the box that contains only the grid:"
+msgstr "Seleccione la caja que contiene solo la cuadrícula:"
 
-#: stramlit_app.py:186
-msgid "Labelled Image."
-msgstr "Imagen etiquetada."
+#: stramlit_app.py:279
+msgid "Submit"
+msgstr "Enviar"
 
-#: stramlit_app.py:347
-msgid "Largest box."
-msgstr "Caja mayor."
+#: stramlit_app.py:282 stramlit_app.py:299
+msgid "no box matches the grid"
+msgstr "ninguna caja coincide con la cuadrícula"
 
-#: stramlit_app.py:197
-msgid "Number of wrong moods"
-msgstr "Número de estados de ánimo incorrectos"
-
-#: stramlit_app.py:278
+#: stramlit_app.py:285
 msgid "Please adjust the parameters or take a new picture"
 msgstr "Pro favor, ajuste los parámetros o tome una nueva foto"
 
-#: stramlit_app.py:352
+#: stramlit_app.py:325
+msgid "Threshold Image."
+msgstr "Umbral de imagen."
+
+#: stramlit_app.py:342
+msgid "Largest box."
+msgstr "Caja mayor."
+
+#: stramlit_app.py:348
+msgid "Welcome to Schelling Board Augmented Reality"
+msgstr "Bienvenido a la Realidad Aumentada del Juego de Mesa de Schelling"
+
+#: stramlit_app.py:349
 msgid "Please upload a picture of the board."
 msgstr "Por favor, suba una imagen del tablero."
 
-#: stramlit_app.py:205
+#: stramlit_app.py:369
+msgid "Show labels"
+msgstr "Mostrar etiquetas"
+
+#: stramlit_app.py:394
+msgid ""
+"The board is labelled with the following labels: \n"
+"`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, `R_S`: Red Sad, `Emp`: "
+"Empty"
+msgstr ""
+"El tablero está etiquetada con las siguientes etiquetas: \n"
+"`B_H`: Azul feliz, `B_S`: Azul triste, `R_H`: Rojo feliz, `R_S`: Rojo "
+"triste, `Emp`: Vacío"
+
+#: stramlit_app.py:401
+msgid "Labelled Image."
+msgstr "Imagen etiquetada."
+
+#: stramlit_app.py:407 stramlit_app.py:417
+msgid "Wrong moods."
+msgstr "Estados de ánimo incorrectos."
+
+#: stramlit_app.py:412
+msgid "Number of wrong moods"
+msgstr "Número de estados de ánimo incorrectos"
+
+#: stramlit_app.py:413
+msgid "please flip the coin marked with an `X` to reach a correct state"
+msgstr ""
+"por favor gira la ficha marcada con una `X` para alcanzar el estado correcto"
+
+#: stramlit_app.py:420
+msgid "new picture"
+msgstr "nueva imagen"
+
+#: stramlit_app.py:426
 msgid "Prepare Dataset"
 msgstr "Preparar conjunto de datos"
 
-#: streamlit_manager_app.py:114
-msgid "Results"
-msgstr "Resultados"
+#: stramlit_app.py:432
+msgid "I counted {number} agents in the board"
+msgstr "He contado {number} agentes en el tablero"
+
+#: stramlit_app.py:436
+msgid "The happyness is:"
+msgstr "La felicidad es:"
 
 #: streamlit_manager_app.py:51 streamlit_manager_app.py:91
 msgid "Schelling Board Game: Manager App"
 msgstr "Juego de Mesa de Schelling: App de Coordinación"
 
-#: stramlit_app.py:266
-msgid "Select the box that contains only the grid:"
-msgstr "Seleccione la caja que contiene solo la cuadrícula:"
-
-#: streamlit_manager_app.py:68
-msgid "Select the length of all games in minutes"
-msgstr "Seleccionad la duración de todas las partidas en minutos"
-
-#: streamlit_manager_app.py:79
-msgid "Select the length of game n�"
-msgstr "Seleccionad duración para la partida nº"
+#: streamlit_manager_app.py:52
+msgid "Data entry"
+msgstr "Entrada de datos"
 
 #: streamlit_manager_app.py:54
 msgid "Select the number of boards"
@@ -104,102 +136,96 @@ msgstr "Seleccionad número de tableros"
 msgid "Select the number of games"
 msgstr "Seleccionad número de partidas"
 
-#: stramlit_app.py:157
-msgid "Show labels"
-msgstr "Mostrar etiquetas"
+#: streamlit_manager_app.py:61 streamlit_manager_app.py:97
+msgid "Board "
+msgstr "Tablero "
 
-#: streamlit_manager_app.py:98
-msgid "State"
-msgstr "Estado"
+#: streamlit_manager_app.py:65
+msgid "Dou you want advanced time settings?"
+msgstr "Quiere configuración de duración avanzada?"
 
-#: stramlit_app.py:272
-msgid "Submit"
-msgstr "Enviar"
+#: streamlit_manager_app.py:68
+msgid "Select the length of all games in minutes"
+msgstr "Seleccionad la duración de todas las partidas en minutos"
 
-#: streamlit_manager_app.py:85
-msgid "Submit configuration"
-msgstr "Enviar configuración"
-
-#: stramlit_app.py:144 stramlit_app.py:232
-msgid "The Schelling Board Augmented Reality :)"
-msgstr "Realidad aumentada del Juego de Mesa de Schelling:)"
-
-#: stramlit_app.py:179
-msgid "The board is labelled with the following labels: \n`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, `R_S`: Red Sad, `Emp`: Empty"
-msgstr "El tablero está etiquetada con las siguientes etiquetas: \n`B_H`: Azul feliz, `B_S`: Azul triste, `R_H`: Rojo feliz, `R_S`: Rojo triste, `Emp`: Vacío"
-
-#: stramlit_app.py:333
-msgid "Threshold Image."
-msgstr "Umbral de imagen."
-
-#: stramlit_app.py:322
-msgid "Uploaded Image."
-msgstr "Subir imagen."
-
-#: stramlit_app.py:351
-msgid "Welcome to Schelling Board Augmented Reality"
-msgstr "Bienvenido a la Realidad Aumentada del Juego de Mesa de Schelling"
-
-#: stramlit_app.py:192 stramlit_app.py:202
-msgid "Wrong moods."
-msgstr "Estados de ánimo incorrectos."
-
-#: streamlit_manager_app.py:99
-msgid " Timer"
-msgstr "Temporizador"
+#: streamlit_manager_app.py:76
+#, fuzzy
+msgid "Choose type for game n "
+msgstr "Escoge modalidad de juega para la partida nº"
 
 #: streamlit_manager_app.py:79
 msgid " in minutes"
 msgstr " en minutos"
 
-#: stramlit_app.py:250
-msgid "adjust preprocessing parameters"
-msgstr "ajustar los parámetros de preprocesamiento"
+#: streamlit_manager_app.py:79
+#, fuzzy
+msgid "Select the length of game n"
+msgstr "Seleccionad duración para la partida nº"
 
-#: stramlit_app.py:239
-msgid "blue"
-msgstr "azul"
+#: streamlit_manager_app.py:82
+msgid "Choose type for the game"
+msgstr "Escoge tipo de partida"
 
-#: stramlit_app.py:239
-msgid "green"
-msgstr "verde"
+#: streamlit_manager_app.py:85
+msgid "Submit configuration"
+msgstr "Enviar configuración"
 
-#: stramlit_app.py:257
-msgid "increase thickness"
-msgstr "aumentar grosor"
+#: streamlit_manager_app.py:87 streamlit_manager_app.py:110
+msgid "Cancel"
+msgstr "Cancelar"
 
-#: stramlit_app.py:206
-msgid "new picture"
-msgstr "nueva imagen"
+#: streamlit_manager_app.py:88 streamlit_manager_app.py:111
+msgid "Confirm"
+msgstr "Confirmar"
 
-#: stramlit_app.py:268 stramlit_app.py:275 stramlit_app.py:309
-msgid "no box matches the grid"
-msgstr "ninguna caja coincide con la cuadrícula"
+#: streamlit_manager_app.py:92
+msgid "Game "
+msgstr "Partida "
 
-#: stramlit_app.py:304
-msgid "number of columns in the grid"
-msgstr "número de columnas en la cuadrícula"
+#: streamlit_manager_app.py:98
+msgid "State"
+msgstr "Estado"
 
-#: stramlit_app.py:198
-msgid "please flip the coin marked with an `X` to reach a correct state"
-msgstr "por favor gira la ficha marcada con una `X` para alcanzar el estado correcto"
+#: streamlit_manager_app.py:99
+msgid " Timer"
+msgstr "Temporizador"
 
-#: stramlit_app.py:239
-msgid "red"
-msgstr "rojo"
+#: streamlit_manager_app.py:104
+msgid "Finish last game and proceed to results"
+msgstr "Terminar la última partida y proseguir a resultados"
 
-#: stramlit_app.py:251
-msgid "reduce the noise"
-msgstr "reducir ruido"
+#: streamlit_manager_app.py:106
+msgid "Finish this game and start next one"
+msgstr "Terminar la partida actual y empezar la siguiente"
 
-#: stramlit_app.py:261
-msgid "times you repeate increase thickness"
-msgstr "veces que se aumenta el grosor"
+#: streamlit_manager_app.py:114
+msgid "Results"
+msgstr "Resultados"
 
-#: stramlit_app.py:293
-msgid "x grid"
-msgstr "cuadrícula x"
+#~ msgid ""
+#~ "\n"
+#~ "   {t}: {v:.1%}\n"
+#~ msgstr ""
+#~ "\n"
+#~ "   {t}: {v:.1%}\n"
 
-#: stramlit_app.py:300
-msgid "y grid"
-msgstr "cuadrícula y"
+#~ msgid " agents on the board"
+#~ msgstr " agentes en el tablero"
+
+#~ msgid "I counted "
+#~ msgstr "He contado "
+
+#~ msgid "The Schelling Board Augmented Reality :)"
+#~ msgstr "Realidad aumentada del Juego de Mesa de Schelling:)"
+
+#~ msgid "Uploaded Image."
+#~ msgstr "Subir imagen."
+
+#~ msgid "blue"
+#~ msgstr "azul"
+
+#~ msgid "green"
+#~ msgstr "verde"
+
+#~ msgid "red"
+#~ msgstr "rojo"

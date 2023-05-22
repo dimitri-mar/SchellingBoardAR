@@ -429,12 +429,14 @@ def second_page():
         st.markdown("------")
         st.markdown("#")
 
+        number_string = _("I counted {number} agents in the board")
         st.markdown(
-            "\n\n\n" +_(f'I counted  {board.count_agents_teams()} agents in the board'))
+            "\n\n\n" + number_string.format(number=board.count_agents_teams()))
 
-        happyness_string ="\n\n\n" + _(f'The happyness is:')+"\n"
+        happyness_string ="\n\n\n" + _("The happyness is:")+"\n"
         for t,v in board.happyness().items():
-            happyness_string += _(f'\n   {t}: {v:.1%}\n')
+            aux_happyness_string =_("\n   {t}: {v:.1%}\n")
+            happyness_string += aux_happyness_string.format(t=t,v=v)
 
         st.markdown(happyness_string)
 
