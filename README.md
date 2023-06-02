@@ -65,6 +65,50 @@ cd SchellingBoardAR
 pip install -r requirements.txt
 ``` 
 
+### Translation
+Translations for bot stramlit_app.py and streamlit_manager_app.py are based on gittext.
+Texts mus be encased as _(string), take into account f-strings are not properly implemented.
+In case new texts in need of translation are added the following steps must be taken:
+
+-Create a .pot file with all strings for translation:
+
+Windows:
+```
+python "path\pygettext.py" -d base -o DataApp\locales\base.pot DataApp\streamlit_manager_app.py DataApp\stramlit_app.py
+```
+
+Unix:
+```
+path/pygettext.py -d base -o DataApp/locales/base.pot DataApp/streamlit_manager_app.py DataApp/stramlit_app.py
+```
+
+-Update old sources with new strings
+
+Windows:
+```
+path\msgmerge.exe locales\$language$\LC_MESSAGES\base.pot locales\base.pot -U
+```
+
+Unix:
+```
+msgmerge locales/$language$/LC_MESSAGES/base.pot locales/base.pot -U
+```
+
+-Add new translatations in base.pot file for each language.
+
+-Create new .mo file for updated .pot file in each language
+
+Windows:
+```
+"path\msgfmt.exe"-o DataApp\locales\$language$\LC_MESSAGES\base.mo DataApp\locales\$language$\LC_MESSAGES\base.pot
+```
+
+Unix:
+```
+msgfmt -o DataApp/locales/$language/LC_MESSAGES/base.mo DataApp/locales/$language/LC_MESSAGES/base.po
+```
+
+
 
 ## License
 
@@ -72,3 +116,5 @@ You can redistribute "The Schelling Board Augmented Reality" and/or modify
  it under the terms of the [GNU Affero General Public](LICENSE) License as published
  by the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
+ 
+All emojis designed by [OpenMoji](https://openmoji.org/) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/#)

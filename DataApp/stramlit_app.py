@@ -24,6 +24,12 @@ import numpy as np
 import streamlit as st
 from loguru import logger
 import datetime, hashlib
+import gettext
+import uuid
+
+from typing import Callable, Tuple
+import  numpy.typing as npt
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from VisualDetector.ImageLabelPrediction import detect_labels_fast
 from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
@@ -31,24 +37,75 @@ from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
 from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
     overlap_bool_matrix_to_picture
 
-VERSION = "0.1.0"
 
-@st.cache
-def read_loaded_img(uploaded_file, save_img=True):
+st.set_page_config(layout="wide",
+                   page_title="The Schelling Board Augmented Reality :)", )
+
+VERSION = "0.1.5"
+
+# set a user session state
+if 'user_uid' not in st.session_state:
+    st.session_state.user_uid= str(uuid.uuid4())
+
+
+available_languages = ['en', 'ca', 'es']
+default_language = 'ca'
+
+
+def set_language(lang: str) -> Callable[[str], str]:
+    """Set the language of the app.
+
+    Args:
+        lang (str): the language to set.
+
+    Returns:
+        Callable[[str], str]: a function that translates a string to the
+        selected language. In particular gettex propery configured.
+    """
+    try:
+        logger.info(
+            "Loading the language: {}".format(st.session_state.language))
+        localizator = gettext.translation('base', localedir='locales',
+                                          languages=[
+                                              st.session_state.language])
+        localizator.install()   # TODO: check if this is needed
+        return localizator.gettext
+    except Exception as e:
+        logger.error("Error loading the language: {}".format(e))
+
+if 'language' not in st.session_state:
+    st.session_state.language = default_language
+
+
+@st.cache_data
+def read_loaded_img(uploaded_file: UploadedFile,
+                    save_img:bool = True,
+                    user_id:str = "") -> Tuple[str, npt.ArrayLike]:
+    """Read the uploaded image and save it in the data folder.
+
+    Args:
+        uploaded_file (st.UploadedFile): the uploaded file.
+        save_img (bool, optional): whether to save the image or not. Defaults to True.
+        user_id (str, optional): the user id. Defaults to "".
+
+    Returns:
+        Tuple[str, npt.ArrayLike]: the process name and the image as a numpy array.
+    """
+
     # upload time
     ct = datetime.datetime.now()
     timestamp = ct.timestamp()
 
     up_file = uploaded_file.read()
-    #compute the hash of the uploaded file
+
+    # compute the hash of the uploaded file
     file_hash = hashlib.md5(up_file).hexdigest()
     img_file_name_base = os.path.splitext(uploaded_file.name)[0]
 
-    process_name = "app_" + file_hash + "_" + str(timestamp)
+    process_name = f"app_{user_id}_{str(timestamp)}_{file_hash}"
     folder_name = "data/" + process_name
 
-    #imageBGR = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8),
-    #                        cv2.IMREAD_COLOR)
+    # read the image
     imageBGR = cv2.imdecode(np.frombuffer(up_file, np.uint8),
                             cv2.IMREAD_COLOR)
     imageRGB = cv2.cvtColor(imageBGR, cv2.COLOR_BGR2RGB)
@@ -61,17 +118,19 @@ def read_loaded_img(uploaded_file, save_img=True):
         with open(os.path.join(folder_name, uploaded_file.name), "wb") as f:
             f.write(uploaded_file.getbuffer())
 
-        #let's save the timestamp
+        # let's save the timestamp
         with open(os.path.join(folder_name, "timestamp.txt"), "w") as f:
             f.write(str(timestamp))
 
+    return process_name, imageRGB
 
 
-    return process_name,  imageRGB
-
-
-def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y,
-                        schelling_board=None):
+def save_img_as_dataset(img:npt.ArrayLike,
+                        img_corrected:npt.ArrayLike,
+                        img_file_name:str,
+                        grid_x:int, grid_y:int,
+                        schelling_board:bool = None,
+                        process_name:str = "") -> None:
     # TODO add uniqe id to the file name for future refererence
     output_dir = "data"
     # create a directory in output_dir if it does not exist
@@ -79,7 +138,7 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y,
         os.makedirs(output_dir)  # create directory
     # remove extension from file name
     img_file_name_base = os.path.splitext(img_file_name)[0]
-    process_name = "app_" + img_file_name_base
+    process_name = "dataset_" + process_name
 
     # setup the logger
     logger.add(f"{output_dir}/{process_name}.log", rotation="10 MB")
@@ -128,10 +187,169 @@ def save_img_as_dataset(img, img_corrected, img_file_name, grid_x, grid_y,
             cv2.imwrite(cell_path, cell)
 
 
+def starting_page():
+    import streamlit as st
+
+    hide_st_style = """
+                <style>
+                #MainMenu {visibility: hidden;}
+                footer {visibility: hidden;}
+                header {visibility: hidden;}
+                </style>
+                """
+    st.markdown(hide_st_style, unsafe_allow_html=True)
+    wellcome_container =st.container()
+
+    with st.sidebar:
+        st.session_state.language = st.sidebar.selectbox('select your language',
+                                                         available_languages,
+                                                         index=available_languages.index(
+                                                              default_language),
+                                                         label_visibility="hidden")
+        _ = set_language(st.session_state.language)
+        sb_content = st.empty()
+        sb_container = sb_content.container()
+        st.markdown( f"""` app version v{VERSION} `""")
+
+    imgs_content = st.empty()
+    imgs_container = imgs_content.container()
+
+    submit_form_content = st.empty()
+    submit_form_container = submit_form_content.container()
+
+    uploaded_file = st.file_uploader(_("Choose a file"), key="file_uploader")
+
+
+
+
+    empty_main = st.empty()
+    main_container = empty_main.container()
+
+    box_colors = [(0, 255, 0), (0, 0, 255), (255, 0, 0)]
+    color_names = ["green", "blue", "red"]
+
+    # load the uploaded image into opencv
+    if uploaded_file is not None:
+
+        show_threshold_img = sb_container.checkbox('Threshold_img',
+                                                       value=False)
+        with sb_container.expander(_("adjust preprocessing parameters")):
+            blurry_kernel_size = st.number_input(_('reduce the noise'),
+                                                     min_value=0,
+                                                     value=5, step=2)
+            adaptive_threshold_mode = st.selectbox(
+                    "threshold method",
+                    ("adaptive_mean", "adaptive_gaussian"))
+            dilate_kernel_size = st.number_input(_('increase thickness'),
+                                                     min_value=0,
+                                                     value=3)
+            dilate_iterations = st.number_input(
+                    _('times you repeate increase thickness'),
+                    min_value=0,
+                    value=1)
+        # small form for changes in grid size
+        cols = sb_container.columns(3, )
+        with cols[0]:
+            grid_x = sb_container.number_input(_('x grid'),
+                                                   min_value=1, max_value=50,
+                                                   value=20, step=1,
+                                                   key="x_grid",
+                                                   help="number of columns in the grid",
+                                                   label_visibility="visible")
+        with cols[2]:
+            grid_y = sb_container.number_input(_("y grid"),
+                                                   min_value=1, max_value=50,
+                                                   value=20, step=1,
+                                                   key="y_grid",
+                                                   help=_(
+                                                       "number of columns in the grid"),
+                                                   label_visibility="visible")
+        st.session_state["grid_x"] = grid_x
+        st.session_state["grid_y"] = grid_y
+
+        with submit_form_content.form("grid_selection_form"):
+            checkbox_val = st.radio(
+                    _("Select the box that contains only the grid:"),
+                    key="visibility",
+                    options=(["no box matches the grid", ] + color_names),
+                    format_func=_,
+                    index=1
+                )
+                # Every form must have a submit button.
+            submitted = st.form_submit_button(_("Submit"))
+            if submitted:
+
+                if checkbox_val == _("no box matches the grid"):
+                        # grid_string = "no box matches the grid"
+                    st.write(
+                            _("Please adjust the parameters or take a new picture"))
+                else:
+                    st.session_state["submitted"] = True
+
+                    def find_color_ix(color_name):
+                        return color_names.index(color_name)
+
+                    st.session_state["largest_box"] = \
+                            st.session_state["largest_box"][
+                                find_color_ix(checkbox_val)]
+                    st.experimental_rerun()
+                        # sb_content.empty()
+                        # main_container.empty()
+
+        if not submitted or checkbox_val == _("no box matches the grid"):
+            if show_threshold_img:
+                #col1, thr_col, col2 = main_container.columns(3)
+                thr_col, col1 = imgs_container.columns(2)
+            else:
+                col1, = imgs_container.columns(1)
+
+            process_name, img = read_loaded_img(uploaded_file,
+                                                user_id=st.session_state.user_uid)
+
+            st.session_state["img"] = img
+            st.session_state["img_file_name"] = uploaded_file.name
+            st.session_state["process_name"] = process_name
+
+            #with col1:
+                #st.image(img, caption=_('Uploaded Image.'),
+                         #use_column_width=True, )
+
+            threshold_img = prepare_img_for_boundary(img, False,
+                                                     blurry_kernel_size,
+                                                     adaptive_threshold_mode,
+                                                     dilate_kernel_size,
+                                                     dilate_iterations)
+
+            if show_threshold_img:
+                with thr_col:
+                    st.image(threshold_img, caption=_('Threshold Image.'),
+                             use_column_width=True, )
+
+            largest_boxes = find_largest_box(threshold_img,
+                                             return_first_n_boxes=3)
+            st.session_state["largest_box"] = largest_boxes
+            # in col2 show the image img with the largest box drawn
+            img2 = img.copy()
+
+            for ix, box in enumerate(largest_boxes):
+                # print(ix, box)
+                cv2.drawContours(img2, [box], 0, box_colors[ix], 15)
+
+            #with col2:
+                #st.image(img2, caption=_('Largest box.'),
+                 #        use_column_width=True)
+            with col1:
+                st.image(img2, caption=_('Largest box.'),
+                     use_column_width=True)    
+
+    else:
+        with wellcome_container:
+            st.markdown(f"""
+            # """ + _('Welcome to Schelling Board Augmented Reality') + f""" 🙂  
+              """ + _('Please upload a picture of the board.'))
+
 def second_page():
     import streamlit as st
-    st.set_page_config(layout="wide",
-                       page_title="The Schelling Board Augmented Reality :)", )
 
     hide_st_style = """
                     <style>
@@ -142,7 +360,15 @@ def second_page():
                     """
     st.markdown(hide_st_style, unsafe_allow_html=True)
     with st.sidebar:
-        show_labels = st.checkbox("Show labels", value=False)
+        st.session_state.language = st.sidebar.selectbox('select your language',
+                                                         available_languages,
+                                                         index=available_languages.index(
+                                                              default_language),
+                                                         label_visibility="hidden")
+        _ = set_language(st.session_state.language)
+        show_labels = st.checkbox(_("Show labels"), value=False)
+        st.markdown( f"""` app version v{VERSION} `""")
+
 
 
 
@@ -158,187 +384,69 @@ def second_page():
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
     board = detect_labels_fast(img_corrected, grid_x, grid_y,
                                #model="../models/cnn_dataset_1.h5")
-                               model="../models/cnn_dataset_evento_2000.h5")
+                               #model="../models/cnn_dataset_evento_2000.h5")
+                               model="../models/cnn_dataset_230509_plastica_luce.h5")
 
     wrong_moods = board.find_wrong_position()
     if show_labels:
         cols2 = st.columns(2, )
         with cols2[1]:
-            st.markdown("The board is labelled with the following labels: \n"
+            st.markdown(_("The board is labelled with the following labels: \n"
                         "`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, "
                         "`R_S`: Red Sad, "
-                        "`Emp`: Empty")
+                        "`Emp`: Empty"))
 
             annotated_img = \
                 overlap_matrix_to_picture(img_corrected, board.to_str_matrix())
-            st.image(annotated_img, caption='Labelled Image.')
+            st.image(annotated_img, caption=_('Labelled Image.'))
         with cols2[0]:
-            st.write(f"Number of wrong moods: {np.sum(wrong_moods)}")
+            st.write(f"{_('Number of wrong moods')}: {np.sum(wrong_moods)}")
 
             wrong_image = \
                 overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
-            st.image(wrong_image, caption='Wrong moods.')
+            st.image(wrong_image, caption=_('Wrong moods.'))
+            
     else:
-        st.markdown(f"Number of wrong moods: {np.sum(wrong_moods)}\n"
-                    f"please flip the coin marked with an `X` to the correct ")
+        #st.markdown(f"Number of wrong moods: {np.sum(wrong_moods)}\n"
+                    #f"please flip the coin marked with an `X` to the correct ")
+        st.markdown(f""+_('Number of wrong moods')+f": {np.sum(wrong_moods)}\n")
+        st.markdown(_('please flip the coin marked with an `X` to reach a correct state'))
 
         wrong_image = \
             overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
-        st.image(wrong_image, caption='Wrong moods.')
+        st.image(wrong_image, caption=_('Wrong moods.'))
+        
+    col3 = st.columns([1,1,1])    
+    new_image = col3[1].button(_("new picture"), key="new_picture", use_container_width=True)
+    if new_image:
+        st.session_state["submitted"] = False
+        st.experimental_rerun()
 
     with st.sidebar:
-        prepare_dataset = st.button("Prepare Dataset", key="prepare_dataset")
-        new_image = st.button("new picture", key="new_picture")
+        prepare_dataset = st.button(_("Prepare Dataset"), key="prepare_dataset")
+
+        #some empty space
+        st.markdown("------")
+        st.markdown("#")
+
+        number_string = _("I counted {number} agents in the board")
+        st.markdown(
+            "\n\n\n" + number_string.format(number=board.count_agents_teams()))
+
+        happyness_string ="\n\n\n" + _("The happyness is:")+"\n"
+        for t,v in board.happyness().items():
+            aux_happyness_string =_("\n   {t}: {v:.1%}\n")
+            happyness_string += aux_happyness_string.format(t=t,v=v)
+
+        st.markdown(happyness_string)
+
 
         if prepare_dataset:
             save_img_as_dataset(img, img_corrected,
                                 st.session_state["img_file_name"],
-                                grid_x, grid_y, board,)
-        if new_image:
-            st.session_state["submitted"] = False
-            st.experimental_rerun()
-
-
-def starting_page():
-    import streamlit as st
-
-    st.set_page_config(layout="wide",
-                       page_title="The Schelling Board Augmented Reality :)", )
-
-    hide_st_style = """
-                <style>
-                #MainMenu {visibility: hidden;}
-                footer {visibility: hidden;}
-                header {visibility: hidden;}
-                </style>
-                """
-    st.markdown(hide_st_style, unsafe_allow_html=True)
-
-    with st.sidebar:
-        uploaded_file = st.file_uploader("Choose a file")
-        sb_content = st.empty()
-        sb_container = sb_content.container()
-
-    empty_main = st.empty()
-    main_container = empty_main.container()
-
-    box_colors = [(0, 255, 0), (0, 0, 255), (255, 0, 0)]
-    color_names = ["green", "blue", "red"]
-
-    # load the uploaded image into opencv
-    if uploaded_file is not None:
-
-        with st.sidebar:
-            show_threshold_img = sb_container.checkbox('Threshold_img',
-                                                       value=False)
-            with sb_container.expander("adjust preprocessing parameters"):
-                blurry_kernel_size = st.number_input('reduce the noise',
-                                                     min_value=0,
-                                                     value=5, step=2)
-                adaptive_threshold_mode = st.selectbox(
-                    "threshold method",
-                    ("adaptive_mean", "adaptive_gaussian"))
-                dilate_kernel_size = st.number_input('increase thickness',
-                                                     min_value=0,
-                                                     value=3)
-                dilate_iterations = st.number_input(
-                    'times you repeate increase thickness',
-                    min_value=0,
-                    value=1)
-            with sb_container.form("grid_selection_form"):
-                checkbox_val = st.radio(
-                    "Select the box that contains only the grid:",
-                    key="visibility",
-                    options=(["no box matches the grid", ] + color_names),
-                    index=1
-                )
-                # Every form must have a submit button.
-                submitted = st.form_submit_button("Submit")
-                if submitted:
-
-                    if checkbox_val == "no box matches the grid":
-                        # grid_string = "no box matches the grid"
-                        st.write(
-                            "Please adjust the parameters or take a new picture")
-                    else:
-                        st.session_state["submitted"] = True
-
-                        def find_color_ix(color_name):
-                            return color_names.index(color_name)
-
-                        st.session_state["largest_box"] = \
-                            st.session_state["largest_box"][
-                                find_color_ix(checkbox_val)]
-                        st.experimental_rerun()
-                        # sb_content.empty()
-                        # main_container.empty()
-            cols = sb_container.columns(3, )
-            with cols[0]:
-                grid_x = sb_container.number_input('x grid',
-                                                   min_value=1, max_value=50,
-                                                   value=20, step=1,
-                                                   key="x_grid",
-                                                   help="number of columns in the grid",
-                                                   label_visibility="visible")
-            with cols[2]:
-                grid_y = sb_container.number_input("y grid",
-                                                   min_value=1, max_value=50,
-                                                   value=20, step=1,
-                                                   key="y_grid",
-                                                   help="number of columns in the grid",
-                                                   label_visibility="visible")
-            st.session_state["grid_x"] = grid_x
-            st.session_state["grid_y"] = grid_y
-
-        if not submitted or checkbox_val == "no box matches the grid":
-            if show_threshold_img:
-                col1, thr_col, col2 = main_container.columns(3)
-            else:
-                col1, col2 = main_container.columns(2)
-
-            process_name, img = read_loaded_img(uploaded_file)
-
-            st.session_state["img"] = img
-            st.session_state["img_file_name"] = uploaded_file.name
-            st.session_state["process_name"] = process_name
-
-            with col1:
-                st.image(img, caption='Uploaded Image.',
-                         use_column_width=True, )
-
-            threshold_img = prepare_img_for_boundary(img, False,
-                                                     blurry_kernel_size,
-                                                     adaptive_threshold_mode,
-                                                     dilate_kernel_size,
-                                                     dilate_iterations)
-
-            if show_threshold_img:
-                with thr_col:
-                    st.image(threshold_img, caption='Threshold Image.',
-                             use_column_width=True, )
-
-            largest_boxes = find_largest_box(threshold_img,
-                                             return_first_n_boxes=3)
-            st.session_state["largest_box"] = largest_boxes
-            # in col2 show the image img with the largest box drawn
-            img2 = img.copy()
-
-            for ix, box in enumerate(largest_boxes):
-                # print(ix, box)
-                cv2.drawContours(img2, [box], 0, box_colors[ix], 15)
-
-            with col2:
-                st.image(img2, caption='Largest box.', use_column_width=True)
-
-    else:
-        st.markdown(f"""
-        # Welcome to Schelling Board Augmented Reality 🙂  
-        👈  Please upload a picture of the board.
-        
-        
-        v{VERSION}""")
-
-
+                                grid_x, grid_y, board,
+                                st.session_state["process_name"])
+            
 if ("submitted" not in st.session_state) or \
         (not st.session_state["submitted"]):
     starting_page()

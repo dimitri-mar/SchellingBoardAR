@@ -1,0 +1,227 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Schelling_AR\n"
+"POT-Creation-Date: 2023-05-22 14:00+0200\n"
+"Language: ca\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Localazy (https://localazy.com)\n"
+"Plural-Forms: nplurals=2; plural=(n==1) ? 0 : 1;\n"
+
+#: stramlit_app.py:220
+msgid "Choose a file"
+msgstr "Escolliu un arxiu"
+
+#: stramlit_app.py:236
+msgid "adjust preprocessing parameters"
+msgstr "Ajustar paràmetres de preprocessament"
+
+#: stramlit_app.py:237
+msgid "reduce the noise"
+msgstr "Reduïr soroll"
+
+#: stramlit_app.py:243
+msgid "increase thickness"
+msgstr "Augmentar gruix"
+
+#: stramlit_app.py:247
+msgid "times you repeate increase thickness"
+msgstr "Vegades que cal incrementar gruix"
+
+#: stramlit_app.py:253
+msgid "x grid"
+msgstr "graella x"
+
+#: stramlit_app.py:260
+msgid "y grid"
+msgstr "graella y"
+
+#: stramlit_app.py:264
+msgid "number of columns in the grid"
+msgstr "nombre de columnes a la graella"
+
+#: stramlit_app.py:272
+msgid "Select the box that contains only the grid:"
+msgstr "Selecciona la caixa que conté únicament la graella:"
+
+#: stramlit_app.py:279
+msgid "Submit"
+msgstr "Enviar"
+
+#: stramlit_app.py:282 stramlit_app.py:299
+msgid "no box matches the grid"
+msgstr "Cap caixa es correpon amb la graella"
+
+#: stramlit_app.py:285
+msgid "Please adjust the parameters or take a new picture"
+msgstr "Si us plau ajusteu paràmetres o feu una nova foto"
+
+#: stramlit_app.py:325
+msgid "Threshold Image."
+msgstr "Llindar d'imatge."
+
+#: stramlit_app.py:342
+msgid "Largest box."
+msgstr "Caixa més gran."
+
+#: stramlit_app.py:348
+msgid "Welcome to Schelling Board Augmented Reality"
+msgstr "Benvinguts a la Realitat Augmentada del Joc de Taula de Schelling"
+
+#: stramlit_app.py:349
+msgid "Please upload a picture of the board."
+msgstr "Si us plau carregueu una foto del tauler."
+
+#: stramlit_app.py:369
+msgid "Show labels"
+msgstr "Mostrar etiquetes"
+
+#: stramlit_app.py:394
+msgid ""
+"The board is labelled with the following labels: \n"
+"`B_H`: Blue Happy, `B_S`: Blue Sad, `R_H`: Red Happy, `R_S`: Red Sad, `Emp`: "
+"Empty"
+msgstr ""
+"El tauler està etiquetat amb les etiquetes següents:\n"
+"`B_H`: Blau Content, `B_S`: Blau Trist, `R_H`: Vermell Content, `R_S`: "
+"Vermell Trist, `Emp`: Buit"
+
+#: stramlit_app.py:401
+msgid "Labelled Image."
+msgstr "Imatge etiquetada."
+
+#: stramlit_app.py:407 stramlit_app.py:417
+msgid "Wrong moods."
+msgstr "Estats d'ànim incorrectes."
+
+#: stramlit_app.py:412
+msgid "Number of wrong moods"
+msgstr "Nombre d'estats d'ànim incorrectes"
+
+#: stramlit_app.py:413
+msgid "please flip the coin marked with an `X` to reach a correct state"
+msgstr ""
+"si us plau capgireu la fitxa marcada amb una `X` per tal d'arribar a l'estat "
+"correcte"
+
+#: stramlit_app.py:420
+msgid "new picture"
+msgstr "nova imatge"
+
+#: stramlit_app.py:426
+msgid "Prepare Dataset"
+msgstr "Prepara conjunt de dades"
+
+#: stramlit_app.py:432
+msgid "I counted {number} agents in the board"
+msgstr "He comptat {number} agents a la taula"
+
+#: stramlit_app.py:436
+msgid "The happyness is:"
+msgstr "La felicitat és:"
+
+#: stramlit_app.py:438
+msgid ""
+"\n"
+"   {t}: {v:.1%}\n"
+msgstr ""
+"\n"
+"   {t}: {v:.1%}\n"
+
+#: streamlit_manager_app.py:51 streamlit_manager_app.py:91
+msgid "Schelling Board Game: Manager App"
+msgstr "Joc de Taula de Schelling: App de Coordinació"
+
+#: streamlit_manager_app.py:52
+msgid "Data entry"
+msgstr "Entrada de dades"
+
+#: streamlit_manager_app.py:54
+msgid "Select the number of boards"
+msgstr "Seleccioneu el nombre de taulers"
+
+#: streamlit_manager_app.py:56
+msgid "Select the number of games"
+msgstr "Seleccioneu el nombre de partides"
+
+#: streamlit_manager_app.py:61 streamlit_manager_app.py:97
+msgid "Board "
+msgstr "Tauler"
+
+#: streamlit_manager_app.py:65
+msgid "Dou you want advanced time settings?"
+msgstr "Voleu configuració de durada avançada?"
+
+#: streamlit_manager_app.py:68
+msgid "Select the length of all games in minutes"
+msgstr "Seleccioneu durada per a totes les partides en minuts"
+
+#: streamlit_manager_app.py:76
+#, fuzzy
+msgid "Choose type for game n "
+msgstr "Trieu modalitat de joc per a la partida nº "
+
+#: streamlit_manager_app.py:79
+msgid " in minutes"
+msgstr " en minuts"
+
+#: streamlit_manager_app.py:79
+#, fuzzy
+msgid "Select the length of game n"
+msgstr "Seleccioneu la durada de la partida nº"
+
+#: streamlit_manager_app.py:82
+msgid "Choose type for the game"
+msgstr "Trieu modalitat de joc per la partida"
+
+#: streamlit_manager_app.py:85
+msgid "Submit configuration"
+msgstr "Enviar configuració"
+
+#: streamlit_manager_app.py:87 streamlit_manager_app.py:110
+msgid "Cancel"
+msgstr "Cancel·lar"
+
+#: streamlit_manager_app.py:88 streamlit_manager_app.py:111
+msgid "Confirm"
+msgstr "Confirmar"
+
+#: streamlit_manager_app.py:92
+msgid "Game "
+msgstr "Partida "
+
+#: streamlit_manager_app.py:98
+msgid "State"
+msgstr "Estat"
+
+#: streamlit_manager_app.py:99
+msgid " Timer"
+msgstr "Temporitzador"
+
+#: streamlit_manager_app.py:104
+msgid "Finish last game and proceed to results"
+msgstr "Acaba la última partida i procedeix a resultats"
+
+#: streamlit_manager_app.py:106
+msgid "Finish this game and start next one"
+msgstr "Acaba la partida actual i comença la següent"
+
+#: streamlit_manager_app.py:114
+msgid "Results"
+msgstr "Resultats"
+
+#~ msgid "The Schelling Board Augmented Reality :)"
+#~ msgstr "La App de realitat augmentada del Joc de Taula de Schelling :)"
+
+#~ msgid "Uploaded Image."
+#~ msgstr "Puja imatge."
+
+#~ msgid "blue"
+#~ msgstr "blau"
+
+#~ msgid "green"
+#~ msgstr "verd"
+
+#~ msgid "red"
+#~ msgstr "vermell"
