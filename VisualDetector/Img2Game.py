@@ -86,7 +86,7 @@ def data_preparation(img_path, show,
         os.makedirs(output_dir)  # create directory
 
     # setup the logger
-    logger.add(f"{output_dir}/{process_name}.log", rotation="10 MB")
+    proc_logger = logger.add(f"{output_dir}/{process_name}.log", rotation="10 MB")
     logger.info(f"Process name: {process_name}")
     logger.info(f"Grid size: {grid_x}x{grid_y}")
     logger.info(f"Image size: {img.shape[1]}x{img.shape[0]}")
@@ -160,6 +160,7 @@ def data_preparation(img_path, show,
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+    logger.remove(proc_logger)
 
 if __name__ == '__main__':
     control()

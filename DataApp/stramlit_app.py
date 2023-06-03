@@ -142,7 +142,7 @@ def save_img_as_dataset(img:npt.ArrayLike,
     process_name = "dataset_" + process_name
 
     # setup the logger
-    logger.add(f"{output_dir}/{process_name}.log", rotation="10 MB")
+    proc_logger = logger.add(f"{output_dir}/{process_name}.log", rotation="10 MB")
     logger.info(f"Process name: {process_name}")
     logger.info(f"Grid size: {grid_x}x{grid_y}")
     logger.info(f"Image size: {img.shape[1]}x{img.shape[0]}")
@@ -186,7 +186,7 @@ def save_img_as_dataset(img:npt.ArrayLike,
             else:
                 cell_path = os.path.join(cells_dir, f"cell_{i}_{j}_{process_name}.png")
             cv2.imwrite(cell_path, cell)
-
+    logger.remove(proc_logger)
 
 def starting_page():
     import streamlit as st
