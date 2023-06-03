@@ -18,6 +18,23 @@ where the `data` folder helps to keep the data persistent on the disk.
 
 You can then access the app at http://localhost:8501
 
+## Configurations
+To configure the app, you can use the `config.ini` and `.env` files 
+located in the `DataApp/` folder. The `.env` file contains database 
+connection information, and the variable names begin with "SCHELLING_DB_".
+For instance, `SCHELLING_DB_HOST` refers to the database host. These
+variables take precedence over the values in the `config.ini` file 
+and will override them.
+
+## Database
+
+A database handle the matches and the data persistence. 
+To initialize ths schema you can run the following command
+
+```bash
+cd DataApp
+python init_db.py
+```
 
 
 ## Train preparation
