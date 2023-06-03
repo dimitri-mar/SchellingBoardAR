@@ -83,47 +83,47 @@ pip install -r requirements.txt
 ``` 
 
 ### Translation
-Translations for bot stramlit_app.py and streamlit_manager_app.py are based on gittext.
-Texts mus be encased as _(string), take into account f-strings are not properly implemented.
+Translations for both `stramlit_app.py` and  `streamlit_manager_app.py` are based on gettext.
+Texts must be encased as `_(string)`, take into account f-strings are not properly implemented.
 In case new texts in need of translation are added the following steps must be taken:
 
--Create a .pot file with all strings for translation:
+- Create a .pot file with all strings for translation:
 
-Windows:
-```
-python "path\pygettext.py" -d base -o DataApp\locales\base.pot DataApp\streamlit_manager_app.py DataApp\stramlit_app.py
-```
+   Windows:
+   ```
+   python "path\pygettext.py" -d base -o DataApp\locales\base.pot DataApp\streamlit_manager_app.py DataApp\stramlit_app.py
+   ```
+   
+   Unix:
+   ```
+   path/pygettext.py -d base -o DataApp/locales/base.pot DataApp/streamlit_manager_app.py DataApp/stramlit_app.py
+   ```
 
-Unix:
-```
-path/pygettext.py -d base -o DataApp/locales/base.pot DataApp/streamlit_manager_app.py DataApp/stramlit_app.py
-```
+- Update old sources with new strings
+  
+  Windows:
+  ```
+  path\msgmerge.exe locales\$language$\LC_MESSAGES\base.pot locales\base.pot -U
+  ```
+  
+  Unix:
+  ```
+  msgmerge locales/$language$/LC_MESSAGES/base.pot locales/base.pot -U
+  ```
 
--Update old sources with new strings
+- Add new translatations in base.pot file for each language.
 
-Windows:
-```
-path\msgmerge.exe locales\$language$\LC_MESSAGES\base.pot locales\base.pot -U
-```
+- Create new .mo file for updated .pot file in each language
 
-Unix:
-```
-msgmerge locales/$language$/LC_MESSAGES/base.pot locales/base.pot -U
-```
-
--Add new translatations in base.pot file for each language.
-
--Create new .mo file for updated .pot file in each language
-
-Windows:
-```
-"path\msgfmt.exe"-o DataApp\locales\$language$\LC_MESSAGES\base.mo DataApp\locales\$language$\LC_MESSAGES\base.pot
-```
-
-Unix:
-```
-msgfmt -o DataApp/locales/$language/LC_MESSAGES/base.mo DataApp/locales/$language/LC_MESSAGES/base.po
-```
+  Windows:
+  ```
+  "path\msgfmt.exe"-o DataApp\locales\$language$\LC_MESSAGES\base.mo DataApp\locales\$language$\LC_MESSAGES\base.pot
+  ```
+  
+  Unix:
+  ```
+  msgfmt -o DataApp/locales/$language/LC_MESSAGES/base.mo DataApp/locales/$language/LC_MESSAGES/base.po
+  ```
 
 
 
