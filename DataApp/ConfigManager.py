@@ -73,6 +73,7 @@ class DbConfig:
 
 
 class Config:
+
     def __init__(self):
 
         # I set the default config values
@@ -80,6 +81,7 @@ class Config:
         self.sys_log_save = True
         self.sys_log_level = "DEBUG"
         self.use_database = True
+        self.output_dir = "data"
         self.db = None
 
         self._config = configparser.ConfigParser()
@@ -105,6 +107,9 @@ class Config:
             self._config["General"].getboolean("sys_log_save")
         self.log_level = \
             self._config["General"]["log_level"]
+        self.output_dir = \
+            self._config["General"]["output_dir"]
+
 
         if self.use_database:
             logger.debug("Database is enabled, importing db config")
