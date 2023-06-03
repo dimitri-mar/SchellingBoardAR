@@ -7,15 +7,22 @@ from DataApp.ConfigManager import parse_env_variables, Config
 class Test(TestCase):
     # to begin we rename .env.configtest to .env
     def setUp(self) -> None:
-        # rename .env to .env.backup
+        # lets use config.ini.configtest and .env.configtest
         if os.path.exists(".env"):
             os.rename(".env", ".env.backup")
         os.rename(".env.configtest", ".env")
+        if os.path.exists("config.ini"):
+            os.rename("config.ini", "config.ini.backup")
+        os.rename("config.ini.configtest", "config.ini")
+
     def tearDown(self) -> None:
+        # remove .env and config.ini files
         os.rename(".env", ".env.configtest")
         if os.path.exists(".env.backup"):
             os.rename(".env.backup", ".env")
-
+        os.rename("config.ini", "config.ini.configtest")
+        if os.path.exists("config.ini.backup"):
+            os.rename("config.ini.backup", "config.ini")
 
     def test_parse_env_variables(self):
         print(os.getcwd())
