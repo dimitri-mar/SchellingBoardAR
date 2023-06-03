@@ -8,14 +8,13 @@ from DataManagement.MatchDatabase import Match, Game, Board, Base, \
                         GamePerBoard, SGdynamics, Picture
 
 
-
 class TestMatch(TestCase):
     def setUp(self) -> None:
         #engine = create_engine('sqlite:///:memory:', echo=False)
         self.file_name = 'test.db'
         # if the file already exists, delete it
 
-        if os.path.exists(self.file_name):
+        if os.path.exists(self.file_nam<e):
             print(f"removing {self.file_name}")
             os.remove(self.file_name)
 

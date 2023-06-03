@@ -38,10 +38,11 @@ from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
     overlap_bool_matrix_to_picture
 
 
+
 st.set_page_config(layout="wide",
                    page_title="The Schelling Board Augmented Reality :)", )
 
-VERSION = "0.1.5"
+__version__ = "0.1.5_dev_db"
 
 # set a user session state
 if 'user_uid' not in st.session_state:
@@ -209,7 +210,7 @@ def starting_page():
         _ = set_language(st.session_state.language)
         sb_content = st.empty()
         sb_container = sb_content.container()
-        st.markdown( f"""` app version v{VERSION} `""")
+        st.markdown( f"""` app version v{__version__} `""")
 
     imgs_content = st.empty()
     imgs_container = imgs_content.container()
@@ -367,7 +368,7 @@ def second_page():
                                                          label_visibility="hidden")
         _ = set_language(st.session_state.language)
         show_labels = st.checkbox(_("Show labels"), value=False)
-        st.markdown( f"""` app version v{VERSION} `""")
+        st.markdown( f"""` app version v{__version__} `""")
 
 
 
