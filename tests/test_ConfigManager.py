@@ -4,7 +4,7 @@ import os
 from DataApp.ConfigManager import parse_env_variables, Config
 
 
-class Test(TestCase):
+class TestConfigManager(TestCase):
     # to begin we rename .env.configtest to .env
     def setUp(self) -> None:
         # lets use config.ini.configtest and .env.configtest
@@ -31,7 +31,12 @@ class Test(TestCase):
         self.assertEqual(conf_env['istest'], '1')
 
     def test_Config(self):
+        print("Testing config")
+        print(os.getcwd())
         config = Config()
+        config.print_config_raw()
+        print(config._config_from_env)
+
         self.assertEqual(config.db.db_type, 'postgres')
         self.assertIsNone(config.db.path)
         self.assertEqual(config.db.connection["port"], "2")

@@ -14,7 +14,7 @@ class TestMatch(TestCase):
         self.file_name = 'test.db'
         # if the file already exists, delete it
 
-        if os.path.exists(self.file_nam<e):
+        if os.path.exists(self.file_name):
             print(f"removing {self.file_name}")
             os.remove(self.file_name)
 

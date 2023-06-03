@@ -184,15 +184,15 @@ class Picture(Base):
 
 
 
-if __name__ == '__main__':
-    import click
-    @click.command()
-    def create_db():
-        """Create the database."""
-
-        engine = create_engine('')
-
-    # Create a SQLAlchemy engine to connect to your database
-    engine = create_engine('your_database_url')
-    # Create the tables in the databas
-    Base.metadata.create_all(engine)
+# if __name__ == '__main__':
+#     import click
+#     @click.command()
+#     def create_db():
+#         """Create the database."""
+#
+#         engine = create_engine('')
+#
+#     # Create a SQLAlchemy engine to connect to your database
+#     engine = create_engine('your_database_url')
+#     # Create the tables in the databas
+#     Base.metadata.create_all(engine)
