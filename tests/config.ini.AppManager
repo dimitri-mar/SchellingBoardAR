@@ -1,9 +1,9 @@
 [General]
 
 sys_log_save = yes
-log_level = "DEBUG"
+log_level = DEBUG
 without_database = no
-output_dir = "data"
+output_dir = data
 
 [Database]
 type = sqlite

@@ -1,5 +1,6 @@
 from unittest import TestCase
 import os
+import shutil
 
 from DataApp.ConfigManager import parse_env_variables, Config
 
@@ -10,17 +11,17 @@ class TestConfigManager(TestCase):
         # lets use config.ini.configtest and .env.configtest
         if os.path.exists(".env"):
             os.rename(".env", ".env.backup")
-        os.rename(".env.configtest", ".env")
+        shutil.copy(".env.configtest", ".env")
         if os.path.exists("config.ini"):
             os.rename("config.ini", "config.ini.backup")
-        os.rename("config.ini.configtest", "config.ini")
+        shutil.copy("config.ini.configtest", "config.ini")
 
     def tearDown(self) -> None:
         # remove .env and config.ini files
-        os.rename(".env", ".env.configtest")
+        os.remove(".env")
         if os.path.exists(".env.backup"):
             os.rename(".env.backup", ".env")
-        os.rename("config.ini", "config.ini.configtest")
+        os.remove("config.ini")
         if os.path.exists("config.ini.backup"):
             os.rename("config.ini.backup", "config.ini")
 

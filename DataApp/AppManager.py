@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy_utils.functions import database_exists
 
 from DataApp.ConfigManager import Config
 from DataManagement.MatchDatabase import Match
@@ -8,6 +9,7 @@ import sys
 
 class AppManager:
     def __init__(self):
+        self.sys_log_save_handler = None
         logger.info("Initializing AppManager")
         self.config = Config()
         logger.debug("Config loaded")
@@ -15,7 +17,7 @@ class AppManager:
         logger.debug("Logger initialized")
 
         if self.config.use_database:
-            self.db_engine = self.init_db_connection()
+            self.db_engine = None
 
     def logger_init(self) -> None:
         """ initialize the logger """
@@ -39,19 +41,27 @@ class AppManager:
             return f"sqlite:///{sqlite_path}"
         elif self.config.db.db_type == "postgres":
             conn = self.config.db.connection
-            return f"postgresql+psycopg2://{conn['user']}:{conn['password']}@{conn['host']}:{conn['port']}/{conn['database']}"
+            return f"postgresql+psycopg2://{conn['user']}:{conn['password']}@{conn['host']}:{conn['port']}/{conn['name']}"
     #
+
+
 
     def init_db_connection(self):
         """ initialize the database """
+        assert self.config.use_database, "use_database is False"
+        db_url = self.db_url()
+
+
         logger.debug("Connecting to the database")
-        db_engine = create_engine(self.db_url() )
+        self.db_engine = create_engine(db_url )
         try:
-            db_engine.connect()
+            self.db_engine.connect()
         except Exception as e:
             logger.error(f"Error connecting to the database: {e}")
+            logger.debug(f"the configuration was: {self.config.db}")
             sys.exit(1)
-        return db_engine
+
+        #return db_engine
         # check if the database exists
         # if not raise exception if exsist do nothing
 

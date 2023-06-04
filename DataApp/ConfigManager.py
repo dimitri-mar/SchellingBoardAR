@@ -7,7 +7,9 @@ from typing import Dict
 
 def parse_env_variables() -> Dict:
     """ parse environent variables"""
-    load_dotenv(find_dotenv(usecwd=True))
+    dotenv_loc = find_dotenv(usecwd=True)
+    logger.debug(f" found .env file in {dotenv_loc}")
+    load_dotenv(dotenv_loc)
 
     prefix = "SCHELLING_"
 
@@ -16,6 +18,7 @@ def parse_env_variables() -> Dict:
         k.lower()[len(prefix):]: v for k, v in os.environ.items()
             if k.startswith(prefix)
     }
+    # logger.debug(f"environment variables parsed {env_conf}")
     return env_conf
 
 
@@ -32,13 +35,24 @@ def parse_config_file() -> Dict:
 class DbConfig:
     def __init__(self, config, config_from_env):
         self.db_type = None
-        self.db_path = None
+        self.path = None
 
         self.connection = None
         self._config = config["Database"]
         self._config_from_env = config_from_env
 
         self.set_values_from_configs()
+
+    def __dict__(self):
+        return {
+            "db_type": self.db_type,
+            "path": self.path,
+            "connection": self.connection
+        }
+
+    def __str__(self):
+        return str(self.__dict__())
+
 
     def get_from_configs(self, name:str):
         """return values from config prioritizing env variables"""
@@ -59,16 +73,16 @@ class DbConfig:
             self.connection["port"] = self.get_from_configs("port")
             self.connection["user"] = self.get_from_configs("user")
             self.connection["password"] = self.get_from_configs("password")
-            self.connection["database"] = self.get_from_configs("database")
+            self.connection["name"] = self.get_from_configs("name")
 
     def check_db_parameters(self, error=False):
-        if self.db_path == "sqlite":
+        if self.db_type == "sqlite":
             if error:
-                assert self.db_path is not None, "db_path is missing"
-            return self.db_path is not None
-        elif self.db_path == "postgres":
+                assert self.path is not None, "path is missing"
+            return self.path is not None
+        elif self.db_type == "postgres":
             if error:
-                assert self.connection is not None, "db_path is missing"
+                assert self.connection is not None, "path is missing"
             return self.connection is not None
 
 
@@ -90,6 +104,15 @@ class Config:
 
         # I set the values from the file and from the environment variables
         self.set_values_from_configs()
+
+    def __dict__(self):
+        all_vars = vars(self)
+        return {k: all_vars[k] for k in all_vars.keys() if not k.startswith("_")}
+
+    def __str__(self):
+        return str(self.__dict__())
+
+
 
     def print_config_raw(self):
         for section in self._config.sections():
