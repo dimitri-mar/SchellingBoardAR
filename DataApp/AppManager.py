@@ -1,8 +1,12 @@
+""" AppManager.py handles all the configuration and initialization of the application
+    It is the first script to be run when the application starts
+    It provides the connection to the database.
+"""
+
 from sqlalchemy import create_engine
 from sqlalchemy_utils.functions import database_exists
 
 from DataApp.ConfigManager import Config
-from DataManagement.MatchDatabase import Match
 from loguru import logger
 import sys
 
@@ -60,8 +64,10 @@ class AppManager:
         self.db_engine = create_engine(db_url)
 
 
-    def check_db_exists(self, create_if_not_exists: bool = False) -> None:
+    def check_db_exists(self) -> None:
         return database_exists(self.db_engine.url)
+
+
 
 
 
