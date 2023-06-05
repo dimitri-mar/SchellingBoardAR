@@ -7,7 +7,7 @@ output_dir = data
 
 [Database]
 type = sqlite
-path = database.db
+path = test.db
 
 # [Database]
 # type = postgres
