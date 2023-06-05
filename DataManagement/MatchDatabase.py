@@ -42,6 +42,7 @@ class Match(Base):
 
     __tablename__ = 'matches'
     id = Column(String, primary_key=True)
+    id_counter = Column(Integer,  autoincrement=True)
     # Add any other columns you want for this table
     starting_time = Column(DateTime, nullable=False,
                            server_default=func.now())
@@ -83,7 +84,7 @@ class Game(Base):
     __tablename__ = 'games'
     id = Column(Integer, primary_key=True)
 
-    match_id = Column(Integer, ForeignKey('matches.id'))
+    match_id = Column(String, ForeignKey('matches.id'))
     match = relationship('Match', back_populates='games')
 
     order_in_match = Column(Integer, default=0)
@@ -105,7 +106,7 @@ class Board(Base):
     __tablename__ = 'boards'
     id = Column(Integer, primary_key=True)
     # a relation with one single match
-    match_id = Column(Integer, ForeignKey('matches.id'))
+    match_id = Column(String, ForeignKey('matches.id'))
     match = relationship('Match', back_populates='boards')
 
     # a one-to-many relationship with the games_per_board table
