@@ -105,6 +105,7 @@ class Board(Base):
 
     __tablename__ = 'boards'
     id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=True)
     # a relation with one single match
     match_id = Column(String, ForeignKey('matches.id'))
     match = relationship('Match', back_populates='boards')

@@ -16,9 +16,13 @@
 # in the source code repository.
 import streamlit as st
 import gettext
+from loguru import logger
+
+from DataApp.AppManager import AppManager
+from MatchManager.MatchManager import MatchManager
 
 
-
+# handle multiple languages
 _ = gettext.gettext
 st.session_state.language = st.sidebar.selectbox('', ['en', 'ca', 'es'])
 
@@ -30,7 +34,28 @@ try:
 except:
     pass
 
-options = ['Test', 'Ordered', 'Free']
+# manage match
+# We first load the AppManager
+app_manager = AppManager()
+app_manager.init_db_connection()
+# the match manager handles the match evolution
+mm = MatchManager(db_engine=app_manager.db_engine)
+
+# is the match started already?
+match_started = mm.is_match_started()
+
+game_dynamics_labels = mm.get_available_dynamics_labels()
+game_dynamics_long_description= mm.get_available_name_description()
+
+gd_helper_description = "  \n".join([
+    "**{name}** - {description}".format(name=name, description=description)
+    for name, description in game_dynamics_long_description.items()])
+
+gd_helper_description  = "Type of games available are:  \n" + gd_helper_description
+
+
+
+options = game_dynamics_labels.values()
 board_names = ['Abella', 'Cabra', 'Elefant', 'Gat', 'Granota', 'Mico', 'Os',
                'Serp', 'Tortuga', 'Vaca']
 
@@ -84,13 +109,13 @@ def setting_page():
     else:
         st.session_state.games_times = [0] * st.session_state.games_number
 
-    if st.session_state.games_number > 1:
+    if st.session_state.games_number >= 1:
         st.session_state.games_types = []
         for i in range(st.session_state.games_number):
             col1, col2 = st.columns([1, 1])
             st.session_state.games_types.append(col1.selectbox(
                 label=_('Choose type for game nº ') + str(i + 1),
-                options=options))
+                options=options, help=gd_helper_description ))
             if advanced_time_settings:
                 st.session_state.games_times = [
                                                    0] * st.session_state.games_number
@@ -102,13 +127,42 @@ def setting_page():
         st.session_state_games_types = ['']
         st.session_state.games_types = (
             col1.selectbox(label=_('Choose type for the game'),
-                           options=options))
+                           options=options, help=gd_helper_description))
+
+    def submit_config():
+        """ this utility function converts the data from the form into a
+        version compatible with the database """
+
+        logger.debug(f"board_number= { st.session_state.board_number}")
+        logger.debug(f"games_number= { st.session_state.games_number}")
+        logger.debug(f"is_advnced= { advanced_time_settings}")
+        logger.debug(f"game_types= { st.session_state.games_types}")
+        logger.debug(f"game_times= { st.session_state.games_times}")
+
+        boards = board_names[:st.session_state.board_number]
+        n_games = len(st.session_state.games_types)
+        assert n_games == st.session_state.games_number, \
+               "The number of games types and the number of games must be the same"
+
+        if advanced_time_settings:
+            times = st.session_state.games_times
+        else:
+            times = [st.session_state.games_times[0], ] * n_games
+
+        assert len(times) == n_games, \
+                "The number of games times and the number of games must be the same"
+
+        mm.create_match(boards=boards,
+                        game_types=st.session_state.games_types,
+                        game_times=times,)
+        nextpage()
+
 
     col1, col2 = st.columns([1, 1])
     if col1.button(_('Submit configuration'), use_container_width=True):
         col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
         col2.button(_('Cancel'), use_container_width=True)
-        col1.button(_('Confirm'), on_click=nextpage,
+        col1.button(_('Confirm'), on_click=submit_config,
                     disabled=(st.session_state.page > 3),
                     use_container_width=True)
 

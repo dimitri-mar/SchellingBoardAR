@@ -44,10 +44,10 @@ class TestMatchManager(TestCase):
         assert "free" in mm.get_available_name_description().keys()
 
 
-
-    def test__init_db_session(self):
-        self.fail()
-
-    def test_get_open_match(self):
-        self.fail()
+    #
+    # def test__init_db_session(self):
+    #     self.fail()
+    #
+    # def test_get_open_match(self):
+    #     self.fail()
 

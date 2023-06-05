@@ -1,9 +1,13 @@
 """ The MatchManager is the class that manages the creation and the developement
 of matches and games.
 """
+from typing import List
+from loguru import logger
+
 from sqlalchemy.orm import sessionmaker
 
-from DataManagement.MatchDatabase import Match, Game, Board, Base, SGdynamics
+from DataManagement.MatchDatabase import Match, Game, Board, SGdynamics
+from DataManagement.MatchDatabase import GamePerBoard, Picture
 
 
 class MatchManager:
@@ -32,7 +36,7 @@ class MatchManager:
         # check if there is a match that is not closed yet
         self.match = self.get_open_match()
         if self.match is None:
-            self.match = self.create_match()
+            pass
 
     def _init_db_session(self):
         """ create a new database session """
@@ -45,8 +49,8 @@ class MatchManager:
         Returns:
             Match object or None
         """
-        return self.db_session.query(Match).\
-            filter(Match.ending_time is None).\
+        return self.db_session.query(Match). \
+            filter(Match.ending_time is None). \
             first()
 
     def is_match_started(self) -> bool:
@@ -60,7 +64,7 @@ class MatchManager:
     @property
     def possible_dynamics(self):
         if self._possible_dynamics is None:
-            self._possible_dynamics =  self.db_session.query(SGdynamics).all()
+            self._possible_dynamics = self.db_session.query(SGdynamics).all()
             return self._possible_dynamics
         else:
             return self._possible_dynamics
@@ -71,7 +75,50 @@ class MatchManager:
     def get_available_dynamics_labels(self):
         return {d.id: d.name for d in self.possible_dynamics}
 
+    def get_available_dynamics_dict(self):
+        return {d.name: d for d in self.possible_dynamics}
 
+    def create_match(self, boards: List[str],
+                     game_types: List[str],
+                     game_times: List[int]):
 
-    def create_match(self):
-        pass
+        logger.debug("creating a new match")
+        logger.debug(f"the match is compose of {len(game_types)} games")
+        logger.debug(f"Each game will be played for a maximum of"
+                     f" {game_times} games")
+
+        match = Match()
+
+        # let's start from the boards
+        boards_db = []
+        for board in boards:
+            logger.debug(f"board: {board}")
+            boards_db.append(Board(name=board))
+
+        match.boards = boards_db
+
+        dy_types_dict = self.get_available_dynamics_dict()
+        games_db = []
+        for ix, (g_type, g_time) in enumerate(zip(game_types, game_times)):
+            logger.debug(f"game type: {g_type}, game time: {g_time}")
+
+            games_db.append(Game(game_dynamics=dy_types_dict[g_type],
+                                 max_time_minutes=g_time,
+                                 order_in_match=ix + 1
+                                 ))
+        match.games = games_db
+
+        # every board is going to play every game
+        for board in boards_db:
+            for game in games_db:
+                board.games_per_board.append(
+                    GamePerBoard(
+                        board=board,
+                        game=game
+                    )
+                )
+
+        print("creating a new match")
+        self.db_session.add(match)
+        self.db_session.commit()
+
