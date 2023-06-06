@@ -105,7 +105,6 @@ def setting_page():
            col1, col2 = st.columns([1,1])
            st.session_state.games_types.append(col1.selectbox(label = _('Choose type for game nº ') + str(i+1), options = options))
            if advanced_time_settings:
-               st.session_state.games_times = [0]*st.session_state.games_number
                st.session_state.games_times[i] = col2.slider(_('Select the length of game nº') + str(i+1) + _(' in minutes'), min_value=5, max_value=59, value=20, step=1)
     else:
         st.session_state_games_types = ['']
@@ -117,6 +116,10 @@ def setting_page():
         col1, col2, col3, col4 = st.columns([1,1,1,1])
         col2.button(_('Cancel'), use_container_width=True)
         col1.button(_('Confirm'), on_click=nextpage, disabled = (st.session_state.page > 3), use_container_width=True)
+
+    #For testing purposes    
+    #st.text(st.session_state.games_types)
+    #st.text(st.session_state.games_times)
             
 def game_page():
     with st.sidebar:
@@ -129,7 +132,6 @@ def game_page():
         st.markdown( f"""` app version v{VERSION} `""")
     st.title(_('Schelling Board Game: Manager App'))
     st.header(_('Game ')+ str(st.session_state.page)+ ': '+st.session_state.games_types[st.session_state.page-1])
-    
     for i in range(st.session_state.board_number):
         col1, col2, col3, col4 = st.columns([1,6,6,6])
         col1.image('Avatares/' +  board_names[i]+'.png', width=23)
