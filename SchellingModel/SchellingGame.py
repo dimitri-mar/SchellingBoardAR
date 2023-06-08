@@ -243,28 +243,37 @@ class SchellingBoard:
         """Return the segregation of the board"""
         links = 0
         mixed_links = 0
-        for i in range(self.teams.shape[0]-1):
-            for j in range(self.teams.shape[1]-1):
+        for i in range(self.teams.shape[0]):
+            for j in range(self.teams.shape[1]):
                 if self.teams[i,j] != self.empty_value:
                     
-                    if self.teams[i,j] == self.teams[i,j+1]:
-                        links += 1
-                        mixed_links += 1
-                    elif self.teams[i,j+1] != self.empty_value:
-                        links += 1
-                        
-                    if self.teams[i,j] == self.teams[i+1,j]:
-                        links += 1
-                        mixed_links += 1
-                    elif self.teams[i+1,j] != self.empty_value:
-                        links += 1
-                        
-                    if self.teams[i,j] == self.teams[i+1,j+1]:
-                        links += 1
-                        mixed_links += 1
-                    elif self.teams[i+1,j+1] != self.empty_value:
-                        links += 1
-    
+                    if j+1 <= self.teams.shape[1]-1:
+                        if self.teams[i,j] == self.teams[i,j+1]:
+                            links += 1
+                            mixed_links += 1
+                        elif self.teams[i,j+1] != self.empty_value:
+                            links += 1
+                    if i+1 <= self.teams.shape[0]-1:                       
+                        if self.teams[i,j] == self.teams[i+1,j]:
+                            links += 1
+                            mixed_links += 1
+                        elif self.teams[i+1,j] != self.empty_value:
+                            links += 1
+ 
+                    if j+1 <= self.teams.shape[1]-1 and i+1 <= self.teams.shape[0]-1:
+                        if self.teams[i,j] == self.teams[i+1,j+1]:
+                            links += 1
+                            mixed_links += 1
+                        elif self.teams[i+1,j+1] != self.empty_value:
+                            links += 1
+
+                    if j-1 >= 0 and i+1 <= self.teams.shape[0]-1:                        
+                        if self.teams[i,j] == self.teams[i+1,j-1]:
+                            links += 1
+                            mixed_links += 1
+                        elif self.teams[i+1,j-1] != self.empty_value:
+                            links += 1
+                          
         return 1-mixed_links/links
 
 class SchellingGame:
