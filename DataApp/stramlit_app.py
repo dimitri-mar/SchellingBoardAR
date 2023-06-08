@@ -439,6 +439,9 @@ def second_page():
             happyness_string += aux_happyness_string.format(t=t,v=v)
 
         st.markdown(happyness_string)
+        
+        segregation_string=_("The segregation index is:")
+        st.markdown(segregation_string+"  \n"+str(board.segregation())[:4])
 
 
         if prepare_dataset:

@@ -239,9 +239,33 @@ class SchellingBoard:
         return happiness
 
 
-
-
-
+    def segregation(self):
+        """Return the segregation of the board"""
+        links = 0
+        mixed_links = 0
+        for i in range(self.teams.shape[0]-1):
+            for j in range(self.teams.shape[1]-1):
+                if self.teams[i,j] != self.empty_value:
+                    
+                    if self.teams[i,j] == self.teams[i,j+1]:
+                        links += 1
+                        mixed_links += 1
+                    elif self.teams[i,j+1] != self.empty_value:
+                        links += 1
+                        
+                    if self.teams[i,j] == self.teams[i+1,j]:
+                        links += 1
+                        mixed_links += 1
+                    elif self.teams[i+1,j] != self.empty_value:
+                        links += 1
+                        
+                    if self.teams[i,j] == self.teams[i+1,j+1]:
+                        links += 1
+                        mixed_links += 1
+                    elif self.teams[i+1,j+1] != self.empty_value:
+                        links += 1
+    
+        return 1-mixed_links/links
 
 class SchellingGame:
     def __init__(self, grid_x, grid_y, threshold=0.5, n_teams=2):
