@@ -385,7 +385,8 @@ def second_page():
     board = detect_labels_fast(img_corrected, grid_x, grid_y,
                                #model="../models/cnn_dataset_1.h5")
                                #model="../models/cnn_dataset_evento_2000.h5")
-                               model="../models/cnn_dataset_230509_plastica_luce.h5")
+                               #model="../models/cnn_dataset_230509_plastica_luce.h5")
+                               model = "../models/cnn_dataset_230609_wood_only_luce_only.h5")
 
     wrong_moods = board.find_wrong_position()
     if show_labels:
