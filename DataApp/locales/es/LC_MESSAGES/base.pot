@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Schelling_AR\n"
-"POT-Creation-Date: 2023-06-08 11:16+0200\n"
+"POT-Creation-Date: 2023-06-10 10:09+0200\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -128,9 +128,13 @@ msgstr ""
 "\n"
 "   {t}: {v:.1%}\n"
 
-#: stramlit_app.py:443
+#: stramlit_app.py:445
 msgid "The segregation index is:"
-msgstr "El índice de segragación es:"
+msgstr "El índice de segregación es:"
+
+#: stramlit_app.py:448
+msgid "Segregation can not be calculated for this configuration"
+msgstr "La segregación no puede calcularse para esta configuración"
 
 #: streamlit_manager_app.py:82 streamlit_manager_app.py:133
 msgid "Schelling Board Game: Manager App"

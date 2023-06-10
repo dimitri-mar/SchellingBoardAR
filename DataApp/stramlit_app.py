@@ -385,8 +385,7 @@ def second_page():
     board = detect_labels_fast(img_corrected, grid_x, grid_y,
                                #model="../models/cnn_dataset_1.h5")
                                #model="../models/cnn_dataset_evento_2000.h5")
-                               #model="../models/cnn_dataset_230509_plastica_luce.h5")
-                               model = "../models/cnn_dataset_230609_wood_only_luce_only.h5")
+                               model="../models/cnn_dataset_230509_plastica_luce.h5")
 
     wrong_moods = board.find_wrong_position()
     if show_labels:
@@ -441,8 +440,12 @@ def second_page():
 
         st.markdown(happyness_string)
         
-        segregation_string=_("The segregation index is:")
-        st.markdown(segregation_string+"  \n"+str(board.segregation())[:4])
+        segregation = board.segregation()
+        if segregation >= 0:
+            segregation_string=_("The segregation index is:")
+            st.markdown(segregation_string + f"\n   {segregation:.1%}")
+        else:
+            st.markdown(_("Segregation can not be calculated for this configuration"))
 
 
         if prepare_dataset:
