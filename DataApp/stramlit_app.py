@@ -122,7 +122,7 @@ def read_loaded_img(uploaded_file: UploadedFile,
         with open(os.path.join(folder_name, "timestamp.txt"), "w") as f:
             f.write(str(timestamp))
 
-    return process_name, imageRGB
+    return process_name, imageBGR# imageRGB
 
 
 def save_img_as_dataset(img:npt.ArrayLike,
@@ -415,7 +415,8 @@ def second_page():
 
         wrong_image = \
             overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
-        st.image(wrong_image, caption=_('Wrong moods.'))
+        wrong_image_rgb = cv2.cvtColor(wrong_image, cv2.COLOR_BGR2RGB)
+        st.image(wrong_image_rgb, caption=_('Wrong moods.'))
         
     col3 = st.columns([1,1,1])    
     new_image = col3[1].button(_("new picture"), key="new_picture", use_container_width=True)
