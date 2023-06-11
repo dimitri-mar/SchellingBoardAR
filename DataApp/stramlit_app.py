@@ -41,7 +41,7 @@ from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
 st.set_page_config(layout="wide",
                    page_title="The Schelling Board Augmented Reality :)", )
 
-__version__ = "0.1.5_dev_imp__wood"
+__version__ = "0.1.6_dev_imp__wood"
 
 # set a user session state
 if 'user_uid' not in st.session_state:
