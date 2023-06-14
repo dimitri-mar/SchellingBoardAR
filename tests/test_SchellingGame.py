@@ -192,4 +192,23 @@ class TestSchellingBoard(TestCase):
         self.fail()
 
     def test_segregation(self):
-        self.fail()
+        board_teams = [
+            [1,0,2,0],
+            [2,1,0,0],
+            [3,2,3,0],
+        ]
+        board_moods = [
+            [1,0,-1,0],
+            [1,1,0,0],
+            [-1,-1,-1,0],
+        ]
+
+        sb = SchellingBoard(
+            teams=np.array(board_teams),
+            moods=np.array(board_moods),
+            team_names=["Red", "Blue", "Green"]
+        )
+
+        segregation = sb.segregation()
+        assert  np.isclose(segregation, 2/11)
+
