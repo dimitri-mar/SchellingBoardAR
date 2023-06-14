@@ -38,19 +38,28 @@ class SchellingBoard:
         It is important to notice that moods can be wrong, while the position of the teams is always correct.
 
         Args:
-            teams (npt.ArrayLike): a 2D array of teams
-            moods (npt.ArrayLike): a 2D array of moods
-            team_names (List, optional): A list representing the team names. Defaults to ["B", "R"].
-            separator (str, optional): separtor betwen team and mood in the matrix. Defaults to "_".
-            mood_map (Dict, optional): The mapping between the status of each agent and an integer value. Defaults to {"H": 1, "S": -1}.
-            empty_value (int, optional): the integer representing . Defaults to 0.
+            teams (npt.ArrayLike): a 2D array of teams, teams are represented
+                                    by integer numbers. 0 is empty
+            moods (npt.ArrayLike): a 2D array of moods, moods are integers.
+                         0 is empty and mood_map defines the possible states
+            team_names (List, optional): A list representing the team names.
+                                            Defaults to ["B", "R"].
+            separator (str, optional): separtor betwen team and mood in the
+                                        matrix. Defaults to "_".
+            mood_map (Dict, optional): The mapping between the status of each
+                    agent and an integer value. Defaults to {"H": 1, "S": -1}.
+            empty_value (int, optional): the integer representing .
+                                                Defaults to 0.
         """
 
+        if (np.unique(teams).size - 1) > len(team_names):
+           raise ValueError("teams should contain only the team names")
+        elif (np.unique(teams).size - 1) < len(team_names):
+            print("WARNING: found less teams than team_names")
 
-        #if (np.unique(teams).size - 1) <= len(team_names):
-        #    raise ValueError("teams should contain only the team names")
+        if moods is not None:
+            assert teams.shape == moods.shape, "teams and moods should have the same shape"
 
-        assert teams.shape == moods.shape, "teams and moods should have the same shape"
 
         self.teams = teams
         self.moods = moods
@@ -80,17 +89,17 @@ class SchellingBoard:
         team = self.parse_team(team)
         return np.count_nonzero(self.teams == team)
 
-    def cont_empty_cells(self) -> int:
+    def count_empty_cells(self) -> int:
         return np.count_nonzero(self.teams == self.empty_value)
 
     def count_agents_teams(self) -> Dict:
         """Return the number of agents of each team"""
         count =  {team: self.count_team_agents(team) for team in self.team_names}
-        count["Empty"] = self.cont_empty_cells()
+        count["Empty"] = self.count_empty_cells()
         return count
 
     def get_status_cell_str(self,
-                            x:int, y:int, separator="_"):
+                            x:int, y:int, separator="_") -> str:
         """Return a string representation of the status of a cell"""
 
         team = self.teams[y, x]
@@ -114,27 +123,35 @@ class SchellingBoard:
         return classes
 
 
-    def get_team_str(self, team: Union[int]):
+    def get_team_str(self, team: Union[int]) -> str:
         return self.team_names[team - 1]
 
-    def get_team_mood(self, mood: Union[int]):
+    def get_team_mood(self, mood: Union[int]) -> str:
         return self.mood_map_inv[mood]
 
 
-    def parse_team(self, team: Union[int, str]):
+    def parse_team(self, team: Union[int, str]) -> int:
+        """Return the integer representing the team
+
+        you can pass either the name or the integer itself.
+        """
         if isinstance(team, str):
             team = self.team_names.index(team) + 1
 
         return team
 
-    def parse_mood(self, mood: Union[int, str]):
+    def parse_mood(self, mood: Union[int, str]) -> int:
+        """Return the integer representing the mood
+
+        you can pass either the mood name or the integer itself.
+        """
         if isinstance(mood, str):
             mood = self.mood_map[mood]
 
         return mood
 
 
-    def teams_str(self, append_separator=True):
+    def teams_str(self, append_separator=True) -> npt.NDArray[np.str_]:
         """Return a string representation of the teams matrix"""
         team_str = np.empty_like(self.teams, dtype=np.str_)
         for i, team in enumerate(self.team_names):
@@ -239,9 +256,49 @@ class SchellingBoard:
         return happiness
 
 
+    def segregation(self):
+        """
+        Return the segregation of the board
 
+        returns 1 - (# of mixed couples / # of couples)
+        """
+        links = 0
+        mixed_links = 0
+        for i in range(self.teams.shape[0]):
+            for j in range(self.teams.shape[1]):
+                if self.teams[i,j] != self.empty_value:
+                    
+                    if j+1 <= self.teams.shape[1]-1:
+                        if self.teams[i,j] == self.teams[i,j+1]:
+                            links += 1
+                        elif self.teams[i,j+1] != self.empty_value:
+                            mixed_links += 1
+                            links += 1
+                    if i+1 <= self.teams.shape[0]-1:                       
+                        if self.teams[i,j] == self.teams[i+1,j]:
+                            links += 1
+                        elif self.teams[i+1,j] != self.empty_value:
+                            mixed_links += 1
+                            links += 1
+ 
+                    if j+1 <= self.teams.shape[1]-1 and i+1 <= self.teams.shape[0]-1:
+                        if self.teams[i,j] == self.teams[i+1,j+1]:
+                            links += 1
+                        elif self.teams[i+1,j+1] != self.empty_value:
+                            mixed_links += 1
+                            links += 1
 
-
+                    if j-1 >= 0 and i+1 <= self.teams.shape[0]-1:                        
+                        if self.teams[i,j] == self.teams[i+1,j-1]:
+                            links += 1
+                        elif self.teams[i+1,j-1] != self.empty_value:
+                            mixed_links += 1
+                            links += 1
+        
+        if links > 0:
+            return 1-mixed_links/links
+        else:
+            return -1
 
 class SchellingGame:
     def __init__(self, grid_x, grid_y, threshold=0.5, n_teams=2):

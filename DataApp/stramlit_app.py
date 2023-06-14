@@ -41,7 +41,7 @@ from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
 st.set_page_config(layout="wide",
                    page_title="The Schelling Board Augmented Reality :)", )
 
-VERSION = "0.1.5"
+__version__ = "0.1.6_dev_imp__wood"
 
 # set a user session state
 if 'user_uid' not in st.session_state:
@@ -122,7 +122,7 @@ def read_loaded_img(uploaded_file: UploadedFile,
         with open(os.path.join(folder_name, "timestamp.txt"), "w") as f:
             f.write(str(timestamp))
 
-    return process_name, imageRGB
+    return process_name, imageBGR# imageRGB
 
 
 def save_img_as_dataset(img:npt.ArrayLike,
@@ -209,7 +209,7 @@ def starting_page():
         _ = set_language(st.session_state.language)
         sb_content = st.empty()
         sb_container = sb_content.container()
-        st.markdown( f"""` app version v{VERSION} `""")
+        st.markdown( f"""` app version v{__version__} `""")
 
     imgs_content = st.empty()
     imgs_container = imgs_content.container()
@@ -367,7 +367,7 @@ def second_page():
                                                          label_visibility="hidden")
         _ = set_language(st.session_state.language)
         show_labels = st.checkbox(_("Show labels"), value=False)
-        st.markdown( f"""` app version v{VERSION} `""")
+        st.markdown( f"""` app version v{__version__} `""")
 
 
 
@@ -385,7 +385,8 @@ def second_page():
     board = detect_labels_fast(img_corrected, grid_x, grid_y,
                                #model="../models/cnn_dataset_1.h5")
                                #model="../models/cnn_dataset_evento_2000.h5")
-                               model="../models/cnn_dataset_230509_plastica_luce.h5")
+                               #model="../models/cnn_dataset_230509_plastica_luce.h5")
+                                model="../models/cnn_dataset_230611_allwood_not_board2.h5")
 
     wrong_moods = board.find_wrong_position()
     if show_labels:
@@ -414,7 +415,8 @@ def second_page():
 
         wrong_image = \
             overlap_bool_matrix_to_picture(img_corrected, wrong_moods)
-        st.image(wrong_image, caption=_('Wrong moods.'))
+        wrong_image_rgb = cv2.cvtColor(wrong_image, cv2.COLOR_BGR2RGB)
+        st.image(wrong_image_rgb, caption=_('Wrong moods.'))
         
     col3 = st.columns([1,1,1])    
     new_image = col3[1].button(_("new picture"), key="new_picture", use_container_width=True)
@@ -439,6 +441,13 @@ def second_page():
             happyness_string += aux_happyness_string.format(t=t,v=v)
 
         st.markdown(happyness_string)
+        
+        segregation = board.segregation()
+        if segregation >= 0:
+            segregation_string=_("The segregation index is:")
+            st.markdown(segregation_string + f"\n   {segregation:.1%}")
+        else:
+            st.markdown(_("Segregation can not be calculated for this configuration"))
 
 
         if prepare_dataset:
