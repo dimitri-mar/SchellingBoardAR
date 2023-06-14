@@ -170,26 +170,22 @@ class TestSchellingBoard(TestCase):
         sb = self.default_sb()
         print(sb.to_str_matrix())
 
-    def test_team_positions(self):
-        self.fail()
-
-    def test_empty_positions(self):
-        self.fail()
-
-    def test_mood_positions(self):
-        self.fail()
-
-    def test_same_team_neighbours(self):
-        self.fail()
-
-    def test_model_happy_cells(self):
-        self.fail()
-
-    def test_find_wrong_position(self):
-        self.fail()
-
     def test_happyness(self):
-        self.fail()
+        board_teams = [[1, 2, 3, 1],
+                       [0, 2, 1, 0],
+                       [3, 1, 2, 1]]
+
+        sb = SchellingBoard(
+            teams=np.array(board_teams),
+            team_names=["Red", "Blue", "Green"]
+        )
+
+        print(sb.happyness())
+        print(sb.model_happy_cells(1))
+        print(sb.model_happy_cells(2))
+        print(sb.model_happy_cells(3))
+        # TODO
+
 
     def test_segregation(self):
         board_teams = [
