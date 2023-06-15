@@ -187,6 +187,57 @@ def save_img_as_dataset(img:npt.ArrayLike,
             cv2.imwrite(cell_path, cell)
 
 
+def board_selection():
+    import streamlit as st
+    from st_clickable_images import clickable_images
+    import base64
+
+    hide_st_style = """
+                <style>
+                #MainMenu {visibility: hidden;}
+                footer {visibility: hidden;}
+                header {visibility: hidden;}
+                </style>
+                """
+    st.markdown(hide_st_style, unsafe_allow_html=True)
+    wellcome_container =st.container()
+        
+    with st.sidebar:
+        st.session_state.language = st.sidebar.selectbox('select your language',
+                                                         available_languages,
+                                                         index=available_languages.index(
+                                                              default_language),
+                                                         label_visibility="hidden")
+        _ = set_language(st.session_state.language)
+        sb_content = st.empty()
+        sb_container = sb_content.container()
+        st.markdown( f"""` app version v{__version__} `""")
+        
+    with wellcome_container:
+            st.markdown(f"""
+            # """ + _('Welcome to Schelling Board Augmented Reality') + f""" 🙂  
+              """ + _('Please choose board.'))
+
+    board_names=['Abella','Cabra','Elefant','Gat','Granota','Mico','Os','Serp', 'Tortuga', 'Vaca']
+    paths = ['Avatares/'+s+'.png' for s in board_names]
+    images = []
+    for file in paths:
+        with open(file, "rb") as image:
+            encoded = base64.b64encode(image.read()).decode()
+            images.append(f"data:image/jpeg;base64,{encoded}")
+   
+    clicked = clickable_images(images,
+    titles=[f"Image #{str(i)}" for i in range(10)],
+    div_style={"display": "flex", "justify-content": "center", "flex-wrap": "wrap"},
+    img_style={"margin": "5px", "width": "160px"},
+)
+
+    if clicked >-1:
+        st.session_state.board = board_names[clicked]   
+        st.experimental_rerun()
+
+    
+
 def starting_page():
     import streamlit as st
 
@@ -456,7 +507,9 @@ def second_page():
                                 grid_x, grid_y, board,
                                 st.session_state["process_name"])
             
-if ("submitted" not in st.session_state) or \
+if ("board" not in st.session_state):
+    board_selection()           
+elif ("submitted" not in st.session_state) or \
         (not st.session_state["submitted"]):
     starting_page()
 else:
