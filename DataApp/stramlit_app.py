@@ -233,7 +233,8 @@ def board_selection():
 )
 
     if clicked >-1:
-        st.session_state.board = board_names[clicked]   
+        st.session_state.board = board_names[clicked]
+        print("board_selected: ", st.session_state.board)
         st.experimental_rerun()
 
     
@@ -251,6 +252,7 @@ def starting_page():
     st.markdown(hide_st_style, unsafe_allow_html=True)
     wellcome_container =st.container()
 
+
     with st.sidebar:
         st.session_state.language = st.sidebar.selectbox('select your language',
                                                          available_languages,
@@ -258,6 +260,8 @@ def starting_page():
                                                               default_language),
                                                          label_visibility="hidden")
         _ = set_language(st.session_state.language)
+        team_img = 'Avatares/' + st.session_state["board"] + '.png'
+        st.image(team_img, width=23)
         sb_content = st.empty()
         sb_container = sb_content.container()
         st.markdown( f"""` app version v{__version__} `""")
@@ -417,6 +421,9 @@ def second_page():
                                                               default_language),
                                                          label_visibility="hidden")
         _ = set_language(st.session_state.language)
+        team_img = 'Avatares/' + st.session_state["board"] + '.png'
+        st.image(team_img, width=23)
+
         show_labels = st.checkbox(_("Show labels"), value=False)
         st.markdown( f"""` app version v{__version__} `""")
 
