@@ -17,22 +17,40 @@
 import streamlit as st
 import gettext
 from loguru import logger
+from typing import Callable, Tuple
 
 from DataApp.AppManager import AppManager
 from MatchManager.MatchManager import MatchManager
 
+__version__ = "0.1.1"
 
-# handle multiple languages
-_ = gettext.gettext
-st.session_state.language = st.sidebar.selectbox('', ['en', 'ca', 'es'])
+available_languages = ['en', 'ca', 'es']
+default_language = 'ca'
 
-try:
-    localizator = gettext.translation('base', localedir='locales',
-                                      languages=[st.session_state.language])
-    localizator.install()
-    _ = localizator.gettext
-except:
-    pass
+def set_language(lang: str) -> Callable[[str], str]:
+    """Set the language of the app.
+
+    Args:
+        lang (str): the language to set.
+
+    Returns:
+        Callable[[str], str]: a function that translates a string to the
+        selected language. In particular gettex propery configured.
+    """
+    try:
+        logger.info(
+            "Loading the language: {}".format(st.session_state.language))
+        localizator = gettext.translation('base', localedir='locales',
+                                          languages=[
+                                              st.session_state.language])
+        localizator.install()  # TODO: check if this is needed
+        return localizator.gettext
+    except Exception as e:
+        logger.error("Error loading the language: {}".format(e))
+
+
+if 'language' not in st.session_state:
+    st.session_state.language = default_language
 
 # manage match
 # We first load the AppManager
@@ -80,6 +98,16 @@ def create_list_empty_strings(n):
 
 
 def setting_page():
+    with st.sidebar:
+        st.session_state.language = st.sidebar.selectbox(
+            'select your language',
+            available_languages,
+            index=available_languages.index(
+                default_language),
+            label_visibility="hidden")
+        _ = set_language(st.session_state.language)
+        st.markdown(f"""` app version v{__version__} `""")
+
     st.title(_('Schelling Board Game: Manager App'))
     st.title(_('Data entry'))
 
@@ -99,17 +127,21 @@ def setting_page():
 
     col1, col2 = st.columns([1, 1])
 
-    advanced_time_settings = col1.checkbox(
-        _('Dou you want advanced time settings?'))
-    if not advanced_time_settings:
-        st.session_state.games_times = [0]
-        st.session_state.games_times[0] = col1.slider(
-            _('Select the length of all games in minutes'), min_value=5,
-            max_value=59, value=20, step=1)
-    else:
-        st.session_state.games_times = [0] * st.session_state.games_number
-
-    if st.session_state.games_number >= 1:
+    if st.session_state.games_number > 1:
+        advanced_time_settings = col1.checkbox(
+            _('Dou you want advanced time settings?'))
+        if not advanced_time_settings:
+            st.session_state.games_times = [0]
+            # st.session_state.games_times[0] = col1.slider(
+            #     _('Select the length of all games in minutes'), min_value=5,
+            #     max_value=59, value=20, step=1)
+            st.session_state.games_times[0] = col1.slider(
+                _('Select the length of all games in minutes'), min_value=5,
+                max_value=59, value=20, step=1)
+            st.session_state.games_times = st.session_state.games_times * \
+                                              st.session_state.games_number
+        else:
+            st.session_state.games_times = [0] * st.session_state.games_number
         st.session_state.games_types = []
         for i in range(st.session_state.games_number):
             col1, col2 = st.columns([1, 1])
@@ -117,17 +149,19 @@ def setting_page():
                 label=_('Choose type for game nº ') + str(i + 1),
                 options=options, help=gd_helper_description ))
             if advanced_time_settings:
-                st.session_state.games_times = [
-                                                   0] * st.session_state.games_number
+
                 st.session_state.games_times[i] = col2.slider(
                     _('Select the length of game nº') + str(i + 1) + _(
                         ' in minutes'), min_value=5, max_value=59, value=20,
                     step=1)
-    else:
+    else: # single game
         st.session_state_games_types = ['']
-        st.session_state.games_types = (
+        st.session_state.games_types = [
             col1.selectbox(label=_('Choose type for the game'),
-                           options=options, help=gd_helper_description))
+                           options=options, help=gd_helper_description), ]
+        st.session_state.games_times = [col2.slider(
+            _('Select the length of game nº') + str(i + 1) + _(' in minutes'),
+            min_value=5, max_value=59, value=20, step=1),]
 
     def submit_config():
         """ this utility function converts the data from the form into a
@@ -135,7 +169,7 @@ def setting_page():
 
         logger.debug(f"board_number= { st.session_state.board_number}")
         logger.debug(f"games_number= { st.session_state.games_number}")
-        logger.debug(f"is_advnced= { advanced_time_settings}")
+        #logger.debug(f"is_advnced= { advanced_time_settings}")
         logger.debug(f"game_types= { st.session_state.games_types}")
         logger.debug(f"game_times= { st.session_state.games_times}")
 
@@ -144,10 +178,11 @@ def setting_page():
         assert n_games == st.session_state.games_number, \
                "The number of games types and the number of games must be the same"
 
-        if advanced_time_settings:
-            times = st.session_state.games_times
-        else:
-            times = [st.session_state.games_times[0], ] * n_games
+        # if advanced_time_settings:
+        #     times = st.session_state.games_times
+        # else:
+        #     times = [st.session_state.games_times[0], ] * n_games
+        times = st.session_state.games_times
 
         assert len(times) == n_games, \
                 "The number of games times and the number of games must be the same"
@@ -166,12 +201,23 @@ def setting_page():
                     disabled=(st.session_state.page > 3),
                     use_container_width=True)
 
+# For testing purposes
+    # st.text(st.session_state.games_types)
+    # st.text(st.session_state.games_times)
 
 def game_page():
+    with st.sidebar:
+        st.session_state.language = st.sidebar.selectbox(
+            'select your language',
+            available_languages,
+            index=available_languages.index(
+                default_language),
+            label_visibility="hidden")
+        _ = set_language(st.session_state.language)
+        st.markdown(f"""` app version v{__version__} `""")
     st.title(_('Schelling Board Game: Manager App'))
     st.header(_('Game ') + str(st.session_state.page) + ': ' +
               st.session_state.games_types[st.session_state.page - 1])
-
     for i in range(st.session_state.board_number):
         col1, col2, col3, col4 = st.columns([1, 6, 6, 6])
         col1.image('Avatares/' + board_names[i] + '.png', width=23)
@@ -197,8 +243,18 @@ def game_page():
 
 
 def results_page():
+    with st.sidebar:
+        st.session_state.language = st.sidebar.selectbox(
+            'select your language',
+            available_languages,
+            index=available_languages.index(
+                default_language),
+            label_visibility="hidden")
+        _ = set_language(st.session_state.language)
+        st.markdown(f"""` app version v{__version__} `""")
     st.title(_('Results'))
     # Pending: What results to show
+
 
 
 if st.session_state.page == 0:

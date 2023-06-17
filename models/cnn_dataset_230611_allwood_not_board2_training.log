@@ -1,0 +1,33 @@
+2023-06-11 03:47:49.798 | INFO     | __main__:train_model:27 - Training model
+2023-06-11 03:47:49.798 | INFO     | __main__:train_model:45 - training image generator configuration:
+2023-06-11 03:47:49.799 | INFO     | __main__:train_model:46 - {'rescale': 0.00392156862745098, 'rotation_range': 10, 'width_shift_range': 0.2, 'height_shift_range': 0.2, 'shear_range': 0.2, 'zoom_range': 0.2, 'horizontal_flip': True, 'fill_mode': 'nearest'}
+2023-06-11 03:47:49.799 | INFO     | __main__:train_model:47 - batch size: 50
+2023-06-11 03:47:49.799 | INFO     | __main__:train_model:48 - picture size: (75, 75)
+2023-06-11 03:48:05.164 | INFO     | __main__:train_model:27 - Training model
+2023-06-11 03:48:05.164 | INFO     | __main__:train_model:45 - training image generator configuration:
+2023-06-11 03:48:05.165 | INFO     | __main__:train_model:46 - {'rescale': 0.00392156862745098, 'rotation_range': 10, 'width_shift_range': 0.2, 'height_shift_range': 0.2, 'shear_range': 0.2, 'zoom_range': 0.2, 'horizontal_flip': True, 'fill_mode': 'nearest'}
+2023-06-11 03:48:05.165 | INFO     | __main__:train_model:47 - batch size: 50
+2023-06-11 03:48:05.165 | INFO     | __main__:train_model:48 - picture size: (75, 75)
+2023-06-11 03:48:05.485 | INFO     | __main__:train_model:70 - the classes are dict_keys(['B_H', 'B_S', 'Empty', 'R_H', 'R_S'])
+2023-06-11 03:48:05.485 | INFO     | __main__:train_model:71 - the classes are {'B_H': 0, 'B_S': 1, 'Empty': 2, 'R_H': 3, 'R_S': 4}
+2023-06-11 03:48:05.581 | INFO     | __main__:train_model:94 - model summary:
+2023-06-11 03:48:05.583 | INFO     | __main__:train_model:95 - None
+2023-06-11 03:48:05.583 | INFO     | __main__:train_model:97 - compiling model
+2023-06-11 03:48:05.594 | INFO     | __main__:train_model:101 - training model
+2023-06-11 03:49:24.756 | INFO     | __main__:train_model:27 - Training model
+2023-06-11 03:49:24.756 | INFO     | __main__:train_model:45 - training image generator configuration:
+2023-06-11 03:49:24.757 | INFO     | __main__:train_model:46 - {'rescale': 0.00392156862745098, 'rotation_range': 10, 'width_shift_range': 0.2, 'height_shift_range': 0.2, 'shear_range': 0.2, 'zoom_range': 0.2, 'horizontal_flip': True, 'fill_mode': 'nearest'}
+2023-06-11 03:49:24.757 | INFO     | __main__:train_model:47 - batch size: 50
+2023-06-11 03:49:24.757 | INFO     | __main__:train_model:48 - picture size: (75, 75)
+2023-06-11 03:49:25.164 | INFO     | __main__:train_model:70 - the classes are dict_keys(['B_H', 'B_S', 'Empty', 'R_H', 'R_S'])
+2023-06-11 03:49:25.164 | INFO     | __main__:train_model:71 - the classes are {'B_H': 0, 'B_S': 1, 'Empty': 2, 'R_H': 3, 'R_S': 4}
+2023-06-11 03:49:25.257 | INFO     | __main__:train_model:94 - model summary:
+2023-06-11 03:49:25.258 | INFO     | __main__:train_model:95 - None
+2023-06-11 03:49:25.258 | INFO     | __main__:train_model:97 - compiling model
+2023-06-11 03:49:25.266 | INFO     | __main__:train_model:101 - training model
+2023-06-11 04:09:24.383 | INFO     | __main__:train_model:106 - last training loss: 0.09195666015148163
+2023-06-11 04:09:24.384 | INFO     | __main__:train_model:107 - last training accuracy: 0.9774525761604309
+2023-06-11 04:09:24.385 | INFO     | __main__:train_model:108 - last validation loss: 0.012032081373035908
+2023-06-11 04:09:24.385 | INFO     | __main__:train_model:109 - last validation accuracy: 1.0
+2023-06-11 04:09:24.385 | INFO     | __main__:train_model:112 - saving model
+2023-06-11 04:09:24.437 | INFO     | __main__:train_model:115 - saving training graph
