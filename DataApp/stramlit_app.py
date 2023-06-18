@@ -26,11 +26,14 @@ from loguru import logger
 import datetime, hashlib
 import gettext
 import uuid
+import time
 
 from typing import Callable, Tuple
 import  numpy.typing as npt
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
+from DataApp.AppManager import AppManager
+from MatchManager.MatchManager import MatchManager
 from VisualDetector.ImageLabelPrediction import detect_labels_fast
 from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
     find_largest_box, correct_perspective
@@ -235,6 +238,7 @@ def board_selection():
     if clicked >-1:
         st.session_state.board = board_names[clicked]
         print("board_selected: ", st.session_state.board)
+        st.experimental_set_query_params(board=st.session_state.board)
         st.experimental_rerun()
 
 
@@ -513,11 +517,35 @@ def second_page():
                                 st.session_state["img_file_name"],
                                 grid_x, grid_y, board,
                                 st.session_state["process_name"])
-            
-if ("board" not in st.session_state):
+
+
+# manage match
+# We first load the AppManager
+app_manager = AppManager()
+app_manager.init_db_connection()
+# the match manager handles the match evolution
+mm = MatchManager(db_engine=app_manager.db_engine)
+
+# get query parameters
+params = st.experimental_get_query_params()
+print(params)
+
+if not mm.is_match_started():
+    print("Match not started yet")
+    st.markdown( ('# Welcome to Schelling Board Augmented Reality') + f""" 🙂  
+                 """ + ('The match is not started yet. Please wait for the match to start.'))
+    # st.button("Refresh", on_click=st.experimental_rerun())
+    # wait 30 seconds and then refresh
+    time.sleep(10)
+    st.experimental_rerun()
+elif ("board" not in st.session_state) and "board" not in params:
     board_selection()
+    #pass
 elif ("submitted" not in st.session_state) or \
         (not st.session_state["submitted"]):
+    if "board" not in st.session_state:
+        st.session_state["board"] = params["board"][0]
+
     starting_page()
 else:
     second_page()

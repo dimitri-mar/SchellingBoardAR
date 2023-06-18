@@ -21,8 +21,8 @@ import numpy as np
 from loguru import logger
 
 import tensorflow as tf
-import keras_preprocessing
-from keras_preprocessing import image
+#import keras_preprocessing
+#from keras_preprocessing import image
 
 import cv2
 
@@ -82,7 +82,7 @@ def detect_labels(corrected_image,  grid_x, grid_y, model, return_label_img=Fals
     # TODO: onepass
     for position, img in zip(positions, cells):
         #img = image.load_img(image_path, target_size=(75, 75))
-        x = image.img_to_array(img, )
+        x = tf.keras.utils.img_to_array(img, )
         x = x / 255
         x = x.reshape((1,) + x.shape)
 
