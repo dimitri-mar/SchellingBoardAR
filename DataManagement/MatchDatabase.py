@@ -111,7 +111,7 @@ class Board(Base):
     match = relationship('Match', back_populates='boards')
 
     # a one-to-many relationship with the games_per_board table
-    games_per_board = relationship('GamePerBoard', back_populates='board', uselist=True)
+    games_per_board = relationship('GamePerBoard', back_populates='board', uselist=True) #TODO: rename to games2play
 
     #optional:
     n_players = Column(Integer, nullable=True)
@@ -144,6 +144,13 @@ class GamePerBoard(Base):
     # a one-to-many relationship with the pictures table
     pictures = relationship('Picture', back_populates='game_per_board', uselist=True)
 
+    def is_ongoing(self):
+        return self.starting_time is not None and self.ending_time is None
+    def is_over(self):
+        return self.starting_time is not None and self.ending_time is not None
+
+    def is_started(self):
+        return self.starting_time is not None
 
 # Define the SGdynamics table (Schelling Game dynamics)
 class SGdynamics(Base):

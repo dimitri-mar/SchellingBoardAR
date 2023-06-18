@@ -43,6 +43,16 @@ class TestMatchManager(TestCase):
         mm = MatchManager(self.app_manager.db_engine)
         assert "free" in mm.get_available_name_description().keys()
 
+    def test_create_match(self):
+        mm = MatchManager(self.app_manager.db_engine)
+        mm.create_match(["A","B","C"],
+                        ["free",],
+                        [42,])
+        print("is match started? ", mm.is_match_started())
+        print("get_open_match", mm.get_open_match())
+        assert  mm.is_match_started()
+
+
 
     #
     # def test__init_db_session(self):

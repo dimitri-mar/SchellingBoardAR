@@ -3,6 +3,7 @@ of matches and games.
 """
 from typing import List
 from loguru import logger
+import datetime
 
 from sqlalchemy.orm import sessionmaker
 
@@ -35,6 +36,7 @@ class MatchManager:
 
         # check if there is a match that is not closed yet
         self.match = self.get_open_match()
+        logger.debug(f"open match {self.match}")
         if self.match is None:
             pass
 
@@ -50,7 +52,7 @@ class MatchManager:
             Match object or None
         """
         return self.db_session.query(Match). \
-            filter(Match.ending_time is None). \
+            filter(Match.ending_time.is_(None) ). \
             first()
 
     def is_match_started(self) -> bool:
@@ -59,6 +61,10 @@ class MatchManager:
         Returns:
             bool
         """
+
+        if self.match is None:
+            self.match = self.get_open_match()
+
         return self.match is not None
 
     @property
@@ -120,5 +126,15 @@ class MatchManager:
 
         print("creating a new match")
         self.db_session.add(match)
+        self.db_session.commit()
+        self.match = match
+
+    def get_boards(self):
+        return self.match.boards
+
+    def end_match(self):
+        """ end the match """
+        self.match.ending_time = datetime.datetime.now()
+        self.db_session.add(self.match)
         self.db_session.commit()
 
