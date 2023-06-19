@@ -54,6 +54,13 @@ if 'user_uid' not in st.session_state:
 available_languages = ['en', 'ca', 'es']
 default_language = 'ca'
 
+# manage match
+# We first load the AppManager
+app_manager = AppManager()
+app_manager.init_db_connection()
+# the match manager handles the match evolution
+mm = MatchManager(db_engine=app_manager.db_engine)
+
 
 def set_language(lang: str) -> Callable[[str], str]:
     """Set the language of the app.
@@ -83,7 +90,8 @@ if 'language' not in st.session_state:
 @st.cache_data
 def read_loaded_img(uploaded_file: UploadedFile,
                     save_img:bool = True,
-                    user_id:str = "") -> Tuple[str, npt.ArrayLike]:
+                    user_id:str = "",
+                     board_name="") -> Tuple[str, npt.ArrayLike]:
     """Read the uploaded image and save it in the data folder.
 
     Args:
@@ -124,6 +132,11 @@ def read_loaded_img(uploaded_file: UploadedFile,
         # let's save the timestamp
         with open(os.path.join(folder_name, "timestamp.txt"), "w") as f:
             f.write(str(timestamp))
+    if board_name:
+        mm.save_image_db(user_id = user_id,
+                         pic_hash=file_hash,
+                         pic_path=os.path.join(folder_name, uploaded_file.name),
+                         board_name=board_name)
 
     return process_name, imageBGR# imageRGB
 
@@ -243,7 +256,7 @@ def board_selection():
 
 
 
-def starting_page():
+def starting_page(): #TODO: rename
     import streamlit as st
 
     hide_st_style = """
@@ -334,7 +347,7 @@ def starting_page():
                     format_func=_,
                     index=1
                 )
-                # Every form must have a submit button.
+
             submitted = st.form_submit_button(_("Submit"))
             if submitted:
 
@@ -351,6 +364,8 @@ def starting_page():
                     st.session_state["largest_box"] = \
                             st.session_state["largest_box"][
                                 find_color_ix(checkbox_val)]
+                    print("largest_box: ", st.session_state["largest_box"])
+                    print("largest_box: ", type(st.session_state["largest_box"]))
                     st.experimental_rerun()
                         # sb_content.empty()
                         # main_container.empty()
@@ -363,7 +378,8 @@ def starting_page():
                 col1, = imgs_container.columns(1)
 
             process_name, img = read_loaded_img(uploaded_file,
-                                                user_id=st.session_state.user_uid)
+                                                user_id=st.session_state.user_uid,
+                                                board_name=st.session_state.board,)
 
             st.session_state["img"] = img
             st.session_state["img_file_name"] = uploaded_file.name
@@ -519,12 +535,7 @@ def second_page():
                                 st.session_state["process_name"])
 
 
-# manage match
-# We first load the AppManager
-app_manager = AppManager()
-app_manager.init_db_connection()
-# the match manager handles the match evolution
-mm = MatchManager(db_engine=app_manager.db_engine)
+
 
 # get query parameters
 params = st.experimental_get_query_params()

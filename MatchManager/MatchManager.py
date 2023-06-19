@@ -123,10 +123,15 @@ class MatchManager:
         # every board is going to play every game
         for board in boards_db:
             for game in games_db:
+                if game.order_in_match == 1:
+                    starting_time = datetime.datetime.now()
+                else:
+                    starting_time = None
                 board.games_per_board.append(
                     GamePerBoard(
                         board=board,
-                        game=game
+                        game=game,
+                        starting_time=starting_time
                     )
                 )
 
@@ -143,4 +148,47 @@ class MatchManager:
         self.match.ending_time = datetime.datetime.now()
         self.db_session.add(self.match)
         self.db_session.commit()
+
+    def get_board(self, name:str):
+        """ return the board with the given name
+
+        Args:
+            name: str
+
+        Returns:
+            Board object
+        """
+        boards_names = [b.name for b in self.match.boards]
+        ix_board = boards_names.index(name)
+        return self.match.boards[ix_board]
+
+
+
+
+    def get_open_game(self, board):
+        for game_per_board in board.games_per_board:
+            if game_per_board.ending_time is None:
+                return game_per_board
+
+    def save_image_db(self,
+                      user_id,
+                      pic_hash,
+                      pic_path,
+                      board_name):
+        """ save the image in the database """
+        board = self.get_board(board_name)
+        game = self.get_open_game(board)
+
+
+        pic = Picture(picture_user_id=user_id,
+                        picture_hash=pic_hash,
+                        picture_path=pic_path,
+                        )
+        game.pictures.append(pic)
+        #self.db_session.add(pic)
+        self.db_session.commit()
+
+
+
+
 

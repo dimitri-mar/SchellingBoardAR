@@ -52,6 +52,52 @@ class TestMatchManager(TestCase):
         print("get_open_match", mm.get_open_match())
         assert  mm.is_match_started()
 
+    def test_get_board(self):
+        mm = MatchManager(self.app_manager.db_engine)
+        mm.create_match(["A", "B", "C"],
+                        ["free", "free", "free"],
+                        [42, 32, 45])
+
+        print(mm.get_board("A"))
+        assert mm.get_board("A").name == "A"
+
+
+    def test_get_open_game(self):
+        mm = MatchManager(self.app_manager.db_engine)
+        mm.create_match(["A","B","C"],
+                        ["free", "free", "free"],
+                        [42, 32, 45])
+
+        print(mm.match.games)
+        b = mm.get_board("A")
+        print("games", mm.get_open_game(b))
+
+    def test_save_image_db(self):
+        from  DataManagement.MatchDatabase import Picture
+        mm = MatchManager(self.app_manager.db_engine)
+        mm.create_match(["A", "B", "C"],
+                        ["free", "free", "free"],
+                        [42, 32, 45])
+
+        pic = Picture()
+        pic = Picture(picture_user_id="a",
+                        picture_hash="pic_hash",
+                        picture_path="pic_path",
+                        )
+        b = mm.get_board("A")
+        og =  mm.get_open_game(b)
+        #og.pictures.append(pic)
+
+        pic = Picture(picture_user_id="a",
+                        picture_hash="pic_hash",
+                        picture_path="pic_path",
+                        game_per_board=og)
+
+        print("games", mm.get_open_game(b))
+
+
+        #assert mm.get_open_game("A") is not None
+
 
 
     #

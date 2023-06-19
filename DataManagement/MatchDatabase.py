@@ -179,7 +179,7 @@ def insert_default_rows_on_create(target, connection, **kw):
 class Picture(Base):
     __tablename__ = "picture_table"
     picture_id = Column(Integer, primary_key=True)
-    picture_user_id = Column(Integer) # the id of the user who uploaded the picture
+    picture_user_id = Column(String) # the id of the user who uploaded the picture
     picture_hash = Column(String)
     picture_path = Column(String)
     picture_upload_time = Column(DateTime)
