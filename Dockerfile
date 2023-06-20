@@ -21,6 +21,7 @@ COPY . /app
 
 
 
+COPY DataApp/config.ini /app/DataApp 
 
 WORKDIR /app/DataApp
 ENV PYTHONPATH=../
