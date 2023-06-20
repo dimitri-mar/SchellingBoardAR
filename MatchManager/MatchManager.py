@@ -177,6 +177,7 @@ class MatchManager:
                       user_id,
                       pic_hash,
                       pic_path,
+                      upload_time,
                       board_name):
         """ save the image in the database """
         board = self.get_board(board_name)
@@ -186,6 +187,7 @@ class MatchManager:
         pic = Picture(picture_user_id=user_id,
                         picture_hash=pic_hash,
                         picture_path=pic_path,
+                        picture_upload_time=upload_time,
                         )
         game.pictures.append(pic)
         #self.db_session.add(pic)

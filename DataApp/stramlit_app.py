@@ -72,12 +72,14 @@ mm = MatchManager(db_engine=app_manager.db_engine)
 
 
 class picture:
-    def __init__(self, user_uid, process_name, img_path, img_hash, img_box=None):
+    def __init__(self, user_uid, process_name, img_path, img_hash, upload_time,
+                 img_box=None):
         self.user_uid = user_uid
         self.process_name = process_name
         self.img_path = img_path
         self.img_hash = img_hash
         self.img_box = img_box
+        self.upload_time = upload_time
 
 
 def set_language(lang: str) -> Callable[[str], str]:
@@ -153,7 +155,8 @@ def read_loaded_img(uploaded_file: UploadedFile,
     img_metadata = picture(user_uid=user_id,
                             process_name=process_name,
                             img_path=os.path.join(folder_name, uploaded_file.name),
-                            img_hash=file_hash)
+                            img_hash=file_hash,
+                           upload_time=ct)
 
 
     return process_name, imageBGR, img_metadata # imageRGB
@@ -556,6 +559,7 @@ def second_page():
              mm.save_image_db(user_id = img_metadata.user_uid,
                          pic_hash=img_metadata.img_hash,
                          pic_path=img_metadata.img_path,
+                         upload_time = img_metadata.upload_time,
                          board_name=st.session_state.board)
 
 
