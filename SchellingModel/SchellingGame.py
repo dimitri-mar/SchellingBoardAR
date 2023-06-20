@@ -240,6 +240,7 @@ class SchellingBoard:
         """Return the percentage of happy cells based on the modellized happiness"""
 
         happiness = {}
+        total_happy_cells = 0
         for team in self.team_names:
             team_positions = self.team_positions(team)
 
@@ -248,10 +249,16 @@ class SchellingBoard:
             sad_cells = ~happy_cells
 
             # if the cell is of the team and is happy, it should be happy
-            pct_happy = np.sum(team_positions & happy_cells) / np.sum(team_positions)
+            pct_happy = np.sum(team_positions & happy_cells) / np.sum(team_positions) if np.sum(team_positions) > 0 else -1
             happiness[team] = pct_happy
 
-        happiness["total"]= np.sum(list(happiness.values())) / len(happiness)
+            total_happy_cells += np.sum(team_positions & happy_cells)
+
+        total_number_of_tokens = np.sum(~(self.teams == 0))
+
+
+        #happiness["total"]= np.sum(list(happiness.values())) / len(happiness)
+        happiness["total"] = total_happy_cells / total_number_of_tokens if total_number_of_tokens > 0 else -1
         # todo: fix total happiness
 
         return happiness

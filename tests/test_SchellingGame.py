@@ -181,9 +181,39 @@ class TestSchellingBoard(TestCase):
         )
 
         print(sb.happyness())
+        print(~(sb.teams==0))
+        print(np.sum(~(sb.teams == 0)))
+        print(sb.teams)
         print(sb.model_happy_cells(1))
         print(sb.model_happy_cells(2))
         print(sb.model_happy_cells(3))
+
+        # case 50-50
+        print("case 50-50")
+        board_teams = [[1, 1, 2, 2],
+                       [1, 1, 2, 2],
+                       [1, 1, 2, 2],
+                       [1, 1, 2, 2]]
+
+        sb = SchellingBoard(
+            teams=np.array(board_teams),
+            team_names=["Red", "Blue", "Green"]
+        )
+        print(sb.happyness())
+
+        # case 50-50
+        print("case 50-50 empty")
+        board_teams = [[1, 0, 0, 2],
+                       [1, 0, 0, 2],
+                       [1, 0, 0, 2],
+                       [1, 0, 0, 2]]
+
+        sb = SchellingBoard(
+            teams=np.array(board_teams),
+            team_names=["Red", "Blue", "Green"]
+        )
+        print(sb.happyness())
+
         # TODO
 
 
