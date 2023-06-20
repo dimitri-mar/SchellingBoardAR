@@ -271,7 +271,7 @@ def starting_page():
             checkbox_val = st.radio(
                     _("Select the box that contains only the grid:"),
                     key="visibility",
-                    options=(["no box matches the grid", ] + color_names),
+                    options=([_("no box matches the grid"), ] + color_names),
                     format_func=_,
                     index=1
                 )
