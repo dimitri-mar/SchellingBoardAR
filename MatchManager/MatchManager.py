@@ -178,7 +178,10 @@ class MatchManager:
                       pic_hash,
                       pic_path,
                       upload_time,
-                      board_name):
+                      board_name,
+                      img_box,
+                      segregation,
+                      happiness):
         """ save the image in the database """
         board = self.get_board(board_name)
         game = self.get_open_game(board)
@@ -188,6 +191,10 @@ class MatchManager:
                         picture_hash=pic_hash,
                         picture_path=pic_path,
                         picture_upload_time=upload_time,
+                        picture_img_box=str(img_box),
+                        picture_happiness=happiness["total"],
+                        picture_segregation=segregation,
+                        picture_happiness_per_team=str(happiness),
                         )
         game.pictures.append(pic)
         #self.db_session.add(pic)

@@ -185,8 +185,17 @@ class Picture(Base):
     picture_upload_time = Column(DateTime)
     # a column will store the metadata of the picture as raw json string
     picture_metadata = Column(String)
-    # each picture can be part of a game per board
 
+    # picture board box
+    picture_img_box = Column(String, nullable=True)
+
+
+    # metadata from NN
+    picture_happiness = Column(Float, nullable=True)
+    picture_segregation = Column(Float, nullable=True)
+    picture_happiness_per_team = Column(String, nullable=True)
+
+    # each picture can be part of a game per board
     game_per_board_id = Column(Integer, ForeignKey('game_per_board.id'),
                                nullable=True)
     game_per_board = relationship('GamePerBoard', back_populates='pictures')

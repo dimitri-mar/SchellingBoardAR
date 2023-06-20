@@ -236,7 +236,7 @@ class SchellingBoard:
         return wrong_mood
 
 
-    def happyness(self, details=False):
+    def happyness(self, details=False) -> Dict[str, float]:
         """Return the percentage of happy cells based on the modellized happiness"""
 
         happiness = {}
@@ -252,6 +252,7 @@ class SchellingBoard:
             happiness[team] = pct_happy
 
         happiness["total"]= np.sum(list(happiness.values())) / len(happiness)
+        # todo: fix total happiness
 
         return happiness
 

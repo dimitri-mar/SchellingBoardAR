@@ -541,8 +541,9 @@ def second_page():
         st.markdown(
             "\n\n\n" + number_string.format(number=board.count_agents_teams()))
 
+        happiness = board.happyness()
         happyness_string ="\n\n\n" + _("The happyness is:")+"\n"
-        for t,v in board.happyness().items():
+        for t,v in happiness.items():
             aux_happyness_string =_("\n   {t}: {v:.1%}\n")
             happyness_string += aux_happyness_string.format(t=t,v=v)
 
@@ -560,7 +561,11 @@ def second_page():
                          pic_hash=img_metadata.img_hash,
                          pic_path=img_metadata.img_path,
                          upload_time = img_metadata.upload_time,
-                         board_name=st.session_state.board)
+                         board_name=st.session_state.board,
+                         img_box = img_metadata.img_box,
+                         segregation=segregation,
+                         happiness=happiness)
+
 
 
         if prepare_dataset:
