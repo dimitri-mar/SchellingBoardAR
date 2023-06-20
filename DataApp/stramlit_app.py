@@ -62,6 +62,24 @@ app_manager.init_db_connection()
 mm = MatchManager(db_engine=app_manager.db_engine)
 
 
+# @dataclass
+# class picture:
+#     user_uid: str
+#     process_name:str
+#     img_path:str
+#     img_hash:str
+#     img_box: npt.NDArray[np.int64] = None
+
+
+class picture:
+    def __init__(self, user_uid, process_name, img_path, img_hash, img_box=None):
+        self.user_uid = user_uid
+        self.process_name = process_name
+        self.img_path = img_path
+        self.img_hash = img_hash
+        self.img_box = img_box
+
+
 def set_language(lang: str) -> Callable[[str], str]:
     """Set the language of the app.
 
@@ -91,7 +109,7 @@ if 'language' not in st.session_state:
 def read_loaded_img(uploaded_file: UploadedFile,
                     save_img:bool = True,
                     user_id:str = "",
-                     board_name="") -> Tuple[str, npt.ArrayLike]:
+                    ) -> Tuple[str, npt.ArrayLike]:
     """Read the uploaded image and save it in the data folder.
 
     Args:
@@ -132,13 +150,13 @@ def read_loaded_img(uploaded_file: UploadedFile,
         # let's save the timestamp
         with open(os.path.join(folder_name, "timestamp.txt"), "w") as f:
             f.write(str(timestamp))
-    if board_name:
-        mm.save_image_db(user_id = user_id,
-                         pic_hash=file_hash,
-                         pic_path=os.path.join(folder_name, uploaded_file.name),
-                         board_name=board_name)
+    img_metadata = picture(user_uid=user_id,
+                            process_name=process_name,
+                            img_path=os.path.join(folder_name, uploaded_file.name),
+                            img_hash=file_hash)
 
-    return process_name, imageBGR# imageRGB
+
+    return process_name, imageBGR, img_metadata # imageRGB
 
 
 def save_img_as_dataset(img:npt.ArrayLike,
@@ -366,6 +384,11 @@ def starting_page(): #TODO: rename
                                 find_color_ix(checkbox_val)]
                     print("largest_box: ", st.session_state["largest_box"])
                     print("largest_box: ", type(st.session_state["largest_box"]))
+                    st.session_state["img_metadata"].img_box = st.session_state["largest_box"]
+
+                    # st.session_state["img_metadata"] = \
+                    #     dataclasses.replace(st.session_state["img_metadata"],
+                    #     largest_box = st.session_state["largest_box"])
                     st.experimental_rerun()
                         # sb_content.empty()
                         # main_container.empty()
@@ -377,13 +400,14 @@ def starting_page(): #TODO: rename
             else:
                 col1, = imgs_container.columns(1)
 
-            process_name, img = read_loaded_img(uploaded_file,
+            process_name, img, img_metadata = read_loaded_img(uploaded_file,
                                                 user_id=st.session_state.user_uid,
-                                                board_name=st.session_state.board,)
+                                                )
 
             st.session_state["img"] = img
             st.session_state["img_file_name"] = uploaded_file.name
             st.session_state["process_name"] = process_name
+            st.session_state["img_metadata"] = img_metadata
 
             #with col1:
                 #st.image(img, caption=_('Uploaded Image.'),
@@ -457,6 +481,7 @@ def second_page():
     grid_x = st.session_state["grid_x"]
     grid_y = st.session_state["grid_y"]
     largest_box = st.session_state["largest_box"]
+    img_metadata = st.session_state["img_metadata"]
 
     # print(grid_x, grid_y, largest_box)
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
@@ -526,6 +551,12 @@ def second_page():
             st.markdown(segregation_string + f"\n   {segregation:.1%}")
         else:
             st.markdown(_("Segregation can not be calculated for this configuration"))
+
+        if st.session_state.board:
+             mm.save_image_db(user_id = img_metadata.user_uid,
+                         pic_hash=img_metadata.img_hash,
+                         pic_path=img_metadata.img_path,
+                         board_name=st.session_state.board)
 
 
         if prepare_dataset:
