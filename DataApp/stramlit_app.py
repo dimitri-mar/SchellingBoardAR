@@ -251,8 +251,8 @@ def board_selection():
             st.markdown(f"""
             # """ + _('Welcome to Schelling Board Augmented Reality') + f""" 🙂  
               """ + _('Please choose board.'))
-
-    board_names=['Abella','Cabra','Elefant','Gat','Granota','Mico','Os','Serp', 'Tortuga', 'Vaca']
+    board_names = mm.get_board_names()
+    #board_names=['Abella','Cabra','Elefant','Gat','Granota','Mico','Os','Serp', 'Tortuga', 'Vaca']
     paths = ['Avatares/'+s+'.png' for s in board_names]
     images = []
     for file in paths:

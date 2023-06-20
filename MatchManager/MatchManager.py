@@ -143,6 +143,9 @@ class MatchManager:
     def get_boards(self):
         return self.match.boards
 
+    def get_board_names(self):
+        return [b.name for b in self.match.boards]
+
     def end_match(self):
         """ end the match """
         self.match.ending_time = datetime.datetime.now()
