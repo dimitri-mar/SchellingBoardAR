@@ -26,11 +26,14 @@ from loguru import logger
 import datetime, hashlib
 import gettext
 import uuid
+import time
 
 from typing import Callable, Tuple
 import  numpy.typing as npt
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
+from DataApp.AppManager import AppManager
+from MatchManager.MatchManager import MatchManager
 from VisualDetector.ImageLabelPrediction import detect_labels_fast
 from VisualDetector.ImagePreprocessing import prepare_img_for_boundary, \
     find_largest_box, correct_perspective
@@ -41,7 +44,7 @@ from VisualDetector.VisualUtils import overlap_matrix_to_picture, \
 st.set_page_config(layout="wide",
                    page_title="The Schelling Board Augmented Reality :)", )
 
-__version__ = "0.1.6"
+__version__ = "0.1.6_dev_db"
 
 # set a user session state
 if 'user_uid' not in st.session_state:
@@ -50,6 +53,33 @@ if 'user_uid' not in st.session_state:
 
 available_languages = ['en', 'ca', 'es']
 default_language = 'ca'
+
+# manage match
+# We first load the AppManager
+app_manager = AppManager()
+app_manager.init_db_connection()
+# the match manager handles the match evolution
+mm = MatchManager(db_engine=app_manager.db_engine)
+
+
+# @dataclass
+# class picture:
+#     user_uid: str
+#     process_name:str
+#     img_path:str
+#     img_hash:str
+#     img_box: npt.NDArray[np.int64] = None
+
+
+class picture:
+    def __init__(self, user_uid, process_name, img_path, img_hash, upload_time,
+                 img_box=None):
+        self.user_uid = user_uid
+        self.process_name = process_name
+        self.img_path = img_path
+        self.img_hash = img_hash
+        self.img_box = img_box
+        self.upload_time = upload_time
 
 
 def set_language(lang: str) -> Callable[[str], str]:
@@ -80,7 +110,8 @@ if 'language' not in st.session_state:
 @st.cache_data
 def read_loaded_img(uploaded_file: UploadedFile,
                     save_img:bool = True,
-                    user_id:str = "") -> Tuple[str, npt.ArrayLike]:
+                    user_id:str = "",
+                    ) -> Tuple[str, npt.ArrayLike]:
     """Read the uploaded image and save it in the data folder.
 
     Args:
@@ -121,8 +152,14 @@ def read_loaded_img(uploaded_file: UploadedFile,
         # let's save the timestamp
         with open(os.path.join(folder_name, "timestamp.txt"), "w") as f:
             f.write(str(timestamp))
+    img_metadata = picture(user_uid=user_id,
+                            process_name=process_name,
+                            img_path=os.path.join(folder_name, uploaded_file.name),
+                            img_hash=file_hash,
+                           upload_time=ct)
 
-    return process_name, imageBGR# imageRGB
+
+    return process_name, imageBGR, img_metadata # imageRGB
 
 
 def save_img_as_dataset(img:npt.ArrayLike,
@@ -187,8 +224,10 @@ def save_img_as_dataset(img:npt.ArrayLike,
             cv2.imwrite(cell_path, cell)
 
 
-def starting_page():
+def board_selection():
     import streamlit as st
+    from st_clickable_images import clickable_images
+    import base64
 
     hide_st_style = """
                 <style>
@@ -207,6 +246,60 @@ def starting_page():
                                                               default_language),
                                                          label_visibility="hidden")
         _ = set_language(st.session_state.language)
+        sb_content = st.empty()
+        sb_container = sb_content.container()
+        st.markdown( f"""` app version v{__version__} `""")
+
+    with wellcome_container:
+            st.markdown(f"""
+            # """ + _('Welcome to Schelling Board Augmented Reality') + f""" 🙂  
+              """ + _('Please choose board.'))
+    board_names = mm.get_board_names()
+    #board_names=['Abella','Cabra','Elefant','Gat','Granota','Mico','Os','Serp', 'Tortuga', 'Vaca']
+    paths = ['Avatares/'+s+'.png' for s in board_names]
+    images = []
+    for file in paths:
+        with open(file, "rb") as image:
+            encoded = base64.b64encode(image.read()).decode()
+            images.append(f"data:image/jpeg;base64,{encoded}")
+
+    clicked = clickable_images(images,
+    titles=[f"Image #{str(i)}" for i in range(10)],
+    div_style={"display": "flex", "justify-content": "center", "flex-wrap": "wrap"},
+    img_style={"margin": "5px", "width": "160px"},
+)
+
+    if clicked >-1:
+        st.session_state.board = board_names[clicked]
+        print("board_selected: ", st.session_state.board)
+        st.experimental_set_query_params(board=st.session_state.board)
+        st.experimental_rerun()
+
+
+
+def starting_page(): #TODO: rename
+    import streamlit as st
+
+    hide_st_style = """
+                <style>
+                #MainMenu {visibility: hidden;}
+                footer {visibility: hidden;}
+                header {visibility: hidden;}
+                </style>
+                """
+    st.markdown(hide_st_style, unsafe_allow_html=True)
+    wellcome_container =st.container()
+
+
+    with st.sidebar:
+        st.session_state.language = st.sidebar.selectbox('select your language',
+                                                         available_languages,
+                                                         index=available_languages.index(
+                                                              default_language),
+                                                         label_visibility="hidden")
+        _ = set_language(st.session_state.language)
+        team_img = 'Avatares/' + st.session_state["board"] + '.png'
+        st.image(team_img, width=23)
         sb_content = st.empty()
         sb_container = sb_content.container()
         st.markdown( f"""` app version v{__version__} `""")
@@ -275,7 +368,7 @@ def starting_page():
                     format_func=_,
                     index=1
                 )
-                # Every form must have a submit button.
+
             submitted = st.form_submit_button(_("Submit"))
             if submitted:
 
@@ -292,6 +385,13 @@ def starting_page():
                     st.session_state["largest_box"] = \
                             st.session_state["largest_box"][
                                 find_color_ix(checkbox_val)]
+                    print("largest_box: ", st.session_state["largest_box"])
+                    print("largest_box: ", type(st.session_state["largest_box"]))
+                    st.session_state["img_metadata"].img_box = st.session_state["largest_box"]
+
+                    # st.session_state["img_metadata"] = \
+                    #     dataclasses.replace(st.session_state["img_metadata"],
+                    #     largest_box = st.session_state["largest_box"])
                     st.experimental_rerun()
                         # sb_content.empty()
                         # main_container.empty()
@@ -303,12 +403,14 @@ def starting_page():
             else:
                 col1, = imgs_container.columns(1)
 
-            process_name, img = read_loaded_img(uploaded_file,
-                                                user_id=st.session_state.user_uid)
+            process_name, img, img_metadata = read_loaded_img(uploaded_file,
+                                                user_id=st.session_state.user_uid,
+                                                )
 
             st.session_state["img"] = img
             st.session_state["img_file_name"] = uploaded_file.name
             st.session_state["process_name"] = process_name
+            st.session_state["img_metadata"] = img_metadata
 
             #with col1:
                 #st.image(img, caption=_('Uploaded Image.'),
@@ -366,6 +468,9 @@ def second_page():
                                                               default_language),
                                                          label_visibility="hidden")
         _ = set_language(st.session_state.language)
+        team_img = 'Avatares/' + st.session_state["board"] + '.png'
+        st.image(team_img, width=23)
+
         show_labels = st.checkbox(_("Show labels"), value=False)
         st.markdown( f"""` app version v{__version__} `""")
 
@@ -379,6 +484,7 @@ def second_page():
     grid_x = st.session_state["grid_x"]
     grid_y = st.session_state["grid_y"]
     largest_box = st.session_state["largest_box"]
+    img_metadata = st.session_state["img_metadata"]
 
     # print(grid_x, grid_y, largest_box)
     img_corrected = correct_perspective(img, largest_box, (grid_x, grid_y))
@@ -435,13 +541,14 @@ def second_page():
         st.markdown(
             "\n\n\n" + number_string.format(number=board.count_agents_teams()))
 
+        happiness = board.happyness()
         happyness_string ="\n\n\n" + _("The happyness is:")+"\n"
-        for t,v in board.happyness().items():
+        for t,v in happiness.items():
             aux_happyness_string =_("\n   {t}: {v:.1%}\n")
             happyness_string += aux_happyness_string.format(t=t,v=v)
 
         st.markdown(happyness_string)
-        
+
         segregation = board.segregation()
         if segregation >= 0:
             segregation_string=_("The segregation index is:")
@@ -449,15 +556,47 @@ def second_page():
         else:
             st.markdown(_("Segregation can not be calculated for this configuration"))
 
+        if st.session_state.board:
+             mm.save_image_db(user_id = img_metadata.user_uid,
+                         pic_hash=img_metadata.img_hash,
+                         pic_path=img_metadata.img_path,
+                         upload_time = img_metadata.upload_time,
+                         board_name=st.session_state.board,
+                         img_box = img_metadata.img_box,
+                         segregation=segregation,
+                         happiness=happiness)
+
+
 
         if prepare_dataset:
             save_img_as_dataset(img, img_corrected,
                                 st.session_state["img_file_name"],
                                 grid_x, grid_y, board,
                                 st.session_state["process_name"])
-            
-if ("submitted" not in st.session_state) or \
+
+
+
+
+# get query parameters
+params = st.experimental_get_query_params()
+print(params)
+
+if not mm.is_match_started():
+    print("Match not started yet")
+    st.markdown( ('# Welcome to Schelling Board Augmented Reality') + f""" 🙂  
+                 """ + ('The match is not started yet. Please wait for the match to start.'))
+    # st.button("Refresh", on_click=st.experimental_rerun())
+    # wait 30 seconds and then refresh
+    time.sleep(10)
+    st.experimental_rerun()
+elif ("board" not in st.session_state) and "board" not in params:
+    board_selection()
+    #pass
+elif ("submitted" not in st.session_state) or \
         (not st.session_state["submitted"]):
+    if "board" not in st.session_state:
+        st.session_state["board"] = params["board"][0]
+
     starting_page()
 else:
     second_page()

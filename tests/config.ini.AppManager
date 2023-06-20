@@ -1,0 +1,16 @@
+[General]
+
+sys_log_save = yes
+log_level = DEBUG
+without_database = no
+output_dir = data
+
+[Database]
+type = sqlite
+path = test.db
+
+# [Database]
+# type = postgres
+# host = localhost
+port = 5432
+# dbName = SchellingApp
