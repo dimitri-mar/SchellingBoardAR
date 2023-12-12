@@ -233,6 +233,8 @@ def game_page():
         col4.text(
            [gp.game.game_dynamics.name for gp in board.games_per_board])  # Placeholder: Should show time left for corresponding board.
 
+    print(mm.extract_current_timeseries())
+
     col1, col2 = st.columns([1, 1])
 
     # TODO: for the future support multiple games

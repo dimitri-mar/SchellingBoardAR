@@ -181,7 +181,8 @@ class MatchManager:
                       board_name,
                       img_box,
                       segregation,
-                      happiness):
+                      happiness,
+                      board_status_str=""):
         """ save the image in the database """
         board = self.get_board(board_name)
         game = self.get_open_game(board)
@@ -195,12 +196,27 @@ class MatchManager:
                         picture_happiness=happiness["total"],
                         picture_segregation=segregation,
                         picture_happiness_per_team=str(happiness),
+                        picture_table_status=board_status_str,
                         )
         game.pictures.append(pic)
         #self.db_session.add(pic)
         self.db_session.commit()
 
 
+    def extract_current_timeseries(self):
+        """ extract the current timeseries from the database
+
+        Returns:
+            dict
+        """
+        timeseries = {}
+        for board in self.match.boards:
+            timeseries[board.name] = {}
+            for game_per_board in board.games_per_board:
+                timeseries[board.name][game_per_board.game.order_in_match] = \
+                    game_per_board.time_series(ret_pandas=True)
+
+        return timeseries
 
 
 

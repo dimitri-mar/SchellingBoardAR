@@ -21,10 +21,12 @@ The ORM uses sqlalchemy."""
 import datetime, uuid
 
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, \
-    DateTime, Float, event, UniqueConstraint
+    DateTime, Float, event, UniqueConstraint, Text
 from sqlalchemy.orm import relationship, backref, validates, Session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
+
+import pandas as pd
 
 
 
@@ -98,6 +100,8 @@ class Game(Base):
     games_per_board = relationship('GamePerBoard', back_populates='game')
 
 
+
+
 class Board(Base):
     """ Several boards can play at the same time.
 
@@ -152,6 +156,22 @@ class GamePerBoard(Base):
     def is_started(self):
         return self.starting_time is not None
 
+    def time_series(self, ret_pandas=False):
+        ts = []
+        for pic in self.pictures:
+            ts.append(
+                (pic.picture_upload_time,
+                 pic.picture_happiness,
+                 pic.picture_segregation))
+        if ret_pandas:
+            ts_series = pd.DataFrame().from_records(ts)
+            ts_series.to_csv(f"{self.board.name}.csv")
+            return ts_series
+        else:
+            return ts
+
+
+
 # Define the SGdynamics table (Schelling Game dynamics)
 class SGdynamics(Base):
     __tablename__ = 'sgdynamics'
@@ -194,6 +214,7 @@ class Picture(Base):
     picture_happiness = Column(Float, nullable=True)
     picture_segregation = Column(Float, nullable=True)
     picture_happiness_per_team = Column(String, nullable=True)
+    picture_table_status = Column(String, nullable=True)
 
     # each picture can be part of a game per board
     game_per_board_id = Column(Integer, ForeignKey('game_per_board.id'),

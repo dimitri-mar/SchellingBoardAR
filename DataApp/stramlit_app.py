@@ -564,8 +564,10 @@ def second_page():
                          board_name=st.session_state.board,
                          img_box = img_metadata.img_box,
                          segregation=segregation,
-                         happiness=happiness)
-
+                         happiness=happiness,
+                         board_status_str=np.array2string(board.to_str_matrix(),
+                                                          separator=","),
+                              )
 
 
         if prepare_dataset:
