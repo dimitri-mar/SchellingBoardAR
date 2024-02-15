@@ -1,9 +1,10 @@
 # The Schelling Board Augmented Reality
 
-This app helps to play the Schelling Segregation Model Table Game by using Augmented Reality.
+This app helps play the Schelling Segregation Model Board Game by using augmented reality.
 It helps to play the game by using a phone or a tablet to check the happy and unhappy agents. 
 
-
+This app is part of the [Transciències project](https://transciencies.wixsite.com/castellano). 
+For information on how to get or play the board game, you can visit [this page](https://transciencies.wixsite.com/castellano/blank-3). 
 ## Launch app
 
 You can launch the app using docker. 
@@ -42,7 +43,7 @@ python init_db.py
 To train the model, we need first to create a dataset.
 
 ## Cell division
-We can take a picture of the table and  divide  the grid
+We can take a picture of the board and  divide  the grid
 into cells. 
 
 For example, if we have a picture of a 21x25 grid, we can run 
@@ -124,7 +125,10 @@ In case new texts in need of translation are added, the following steps must be 
   ```
   msgfmt -o DataApp/locales/$language/LC_MESSAGES/base.mo DataApp/locales/$language/LC_MESSAGES/base.po
   ```
+## Acknowledgments
+This app is part of the [Transciències project](https://transciencies.wixsite.com/castellano). Please check the website for further information. 
 
+<img src="https://static.wixstatic.com/media/420673_aa6887a292cc4f358d3e2cd187b027a9~mv2.jpg/v1/fill/w_332,h_210,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/Copy%20of%20logo_UBICS.jpg" height="80"> <img src="https://static.wixstatic.com/media/420673_749666e941004a81a5e76e539a04f6ad~mv2.png/v1/fill/w_320,h_160,al_c,lg_1,q_85,enc_auto/Copy%20of%20logoBCNCiencia.png" height="80">  <img src="https://static.wixstatic.com/media/420673_6e692306c05b46d29f7f8da334451651~mv2.png/v1/fill/w_426,h_150,al_c,lg_1,q_85,enc_auto/descarga.png" height="80">
 
 
 ## License
